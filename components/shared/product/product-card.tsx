@@ -1,14 +1,10 @@
-import { Product } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ProductPrice from "./product-price";
+import { ProductType } from "@/types/index";
 
-interface ProductCardProps {
-    product: Product;
-}
-
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product }: { product: ProductType }) => {
     return (
         <Card className="overflow-hidden">
             <CardHeader className='p-0 items-center'>

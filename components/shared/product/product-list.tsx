@@ -1,7 +1,7 @@
-import { Product } from "@prisma/client";
 import ProductCard from "./product-card";
+import { ProductType } from "@/types";
 
-const ProductList = ({ data, title, limit }: { data: Product[], title?: string, limit?: number }) => {
+const ProductList = ({ data, title, limit }: { data: ProductType[], title?: string, limit?: number }) => {
     // Limit the number of products to show
     const limitedData = limit ? data.slice(0, limit) : data;
 
@@ -12,7 +12,7 @@ const ProductList = ({ data, title, limit }: { data: Product[], title?: string, 
             </h2>
             {data.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    {limitedData.map((product: Product) => (
+                    {limitedData.map((product: ProductType) => (
                         <ProductCard product={product} key={product.slug} />
                     ))}
                 </div>
