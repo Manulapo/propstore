@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma schemas are used to define the data model of your application. by defining the data model, prisma will generate a database schema and a client library that you can use to interact with the database. then they are used also to give db structure in db migrations,ceating tables,columns,relations etc.
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -30,3 +26,70 @@ model Product {
   banner      String?
   createdAt   DateTime @default(now()) @db.Timestamp(6)
 }
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String?   @default("NO_NAME")
+  email         String?   @unique(map: "user_email_idx")
+  emailVerified DateTime? @db.Timestamp(6)
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @updatedAt
+  role          String    @default("user")
+  address       Json?     @db.Json
+  paymentMethod String?
+  account       Account[]
+  Session       Session[]
+}
+
+model Account {
+  id                String  @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])  // composite primary key
+  @@index([userId]) // foreign key
+  @@map("accounts") // table name
+}
+
+model Session {
+  sessionToken String   @id
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) //relation with user table and Session
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token]) // composite primary key
+}
+
+//composite primary key: is a primary key that consists of multiple columns. it is used to uniquely identify a row in a table. in this case, we have used composite primary key in Account and VerificationToken model.
+
+//relation: is used to define the relationship between two tables. in this case, we have used relation in Account and Session model to define the relationship between User and Account table.
+
+//index: is used to create an index on a column or a set of columns in a table. in this case, we have used index in Account model to create an index on userId column.
+
+//map: is used to define the table name for a model. in this case, we have used map in Account model to define the table name as "accounts".
+
+//default: is used to set a default value for a column. in this case, we have used default in User model to set the default value for the "role" column as "user".
+
+//unique: is used to create a unique constraint on a column. in this case, we have used unique in User model to create a unique constraint on the "email" column.
