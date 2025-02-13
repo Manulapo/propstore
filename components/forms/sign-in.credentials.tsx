@@ -11,10 +11,10 @@ import { useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
 
 const SignInCredentialsForm = () => {
-    const [data, action] = useActionState(
-        signinUserWithCredentials,
-        { success: false, message: '', error: '' }
-    );
+    const [data, action] = useActionState(signinUserWithCredentials, {
+        success: false,
+        message: '',
+    });
 
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -30,7 +30,7 @@ const SignInCredentialsForm = () => {
 
     return (
         <form action={action}>
-            <input type="hidden" name="callbackUrl" value={callbackUrl}/>
+            <input type="hidden" name="callbackUrl" value={callbackUrl} />
             <div className="space-y-6">
                 <div>
                     <Label htmlFor="email">Email</Label>
@@ -38,7 +38,7 @@ const SignInCredentialsForm = () => {
                 </div>
                 <div>
                     <Label htmlFor="password">Password</Label>
-                    <Input id='password' name="password" type='password' placeholder='Password' autoComplete="password" required defaultValue={signInCredentialsDefaultValues.email} />
+                    <Input id='password' name="password" type='password' placeholder='Password' autoComplete="password" required defaultValue={signInCredentialsDefaultValues.password} />
                 </div>
                 <div>
                     <SignInButton />

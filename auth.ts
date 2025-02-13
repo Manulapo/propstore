@@ -6,9 +6,6 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { compareSync } from 'bcrypt-ts-edge';
 
 
-// Lazy load Prisma to prevent it from being bundled for the browser
-const prismaImport = async () => (await import('@/db/prisma')).prisma;
-
 export const config = {
     pages: {
         signIn: '/sign-in', // This is the page that the user will be redirected to when they are not signed in.
@@ -27,8 +24,6 @@ export const config = {
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) return null;
-
-                const prisma = await prismaImport(); // Ensure Prisma is only used server-side
 
                 // Find user by email only
                 const user = await prisma.user.findUnique({
@@ -51,7 +46,9 @@ export const config = {
     callbacks: {
         async session({ session, user, trigger, token }: any) {
             //set userid from the token
-            session.user.id = token.sub;
+            session.user.id = token.sub; // the sub is the user id that is stored in the token
+            session.user.role = token.role;
+            session.user.name = token.name;
 
             //if thee is an update ,set the user name (our app allows to change name)
             if (trigger === 'update') {
@@ -59,7 +56,24 @@ export const config = {
             }
 
             return session;
-        } // This is the provider that is used to authenticate the user. credentials is the provider that is used to authenticate the user using a username and password.
+        }, // This is the provider that is used to authenticate the user. credentials is the provider that is used to authenticate the user using a username and password.
+        async jwt({ token, user }: any) {
+            token.role = user.role;
+
+            // user has no name use the first part of the email as the name
+            if (!user.name || user.name === 'NO_NAME') {
+                const name = user.email.split('@')[0];
+                token.name = name;
+                // update database with the new name
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { name: token.name }
+                });
+
+                return token;
+            } 
+
+        }
     },
 } satisfies NextAuthConfig;
 

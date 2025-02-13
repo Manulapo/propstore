@@ -1,20 +1,62 @@
 'use server';
-
-import { signIn, signOut } from "@/auth";
-import { AuthError } from "next-auth";
+import { signIn } from "@/auth";
+import { prisma } from "@/db/prisma";
+import { hashSync } from "bcrypt-ts-edge";
+import { signOut } from "next-auth/react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { signInFormSchema } from "../validators";
+import { formatErrors } from "../utils";
+import { signInFormSchema, signUpFormSchema } from "../validators";
 
-type AuthResponse = {
-  success: boolean;
-  message: string;
-  error?: string;
-};
+export async function signUpUser(prevState: unknown,
+  formData: FormData) {
+  try {
+    const user = signUpFormSchema.parse({
+      name: formData.get('name'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+      confirmPassword: formData.get('confirmPassword')
+    });
+
+    console.log({ user });
+
+    const plainPassword = user.password;
+
+    // Hash the password
+    user.password = hashSync(user.password, 10);
+
+    // create user in the database
+    await prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password
+      }
+    })
+
+    // Attempt sign in
+    await signIn('credentials', {
+      email: user.email,
+      password: plainPassword
+    });
+
+    return { success: true, message: 'Signed up successfully' };
+
+  } catch (error) {
+    // Handle redirect errors from Next.js
+    if (isRedirectError(error)) throw error;
+
+    return {
+      success: false,
+      message: formatErrors(error),
+      error: 'User not registered'
+    };
+  }
+}
 
 export async function signinUserWithCredentials(
-  _: unknown, 
+  prevState: unknown,
   formData: FormData
-): Promise<AuthResponse> {
+) {
   try {
     // Validate form data
     const credentials = signInFormSchema.parse({
@@ -36,35 +78,16 @@ export async function signinUserWithCredentials(
     // Handle redirect errors from Next.js
     if (isRedirectError(error)) throw error;
 
-    // Handle auth errors
-    if (error instanceof AuthError) {
-      return {
-        success: false,
-        message: 'Authentication failed',
-        error: error.message
-      };
-    }
-
     return {
       success: false,
-      message: 'Invalid credentials',
+      message: formatErrors(error),
       error: 'Please check your email and password'
     };
   }
 }
 
-export async function signoutUser(): Promise<AuthResponse> {
-  try {
-    await signOut({ redirect: false });
-    return {
-      success: true,
-      message: 'Signed out successfully'
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: 'Failed to sign out',
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
-  }
+export const signOutUser = async () => {
+  await signOut({ redirect: true });
 }
+
+

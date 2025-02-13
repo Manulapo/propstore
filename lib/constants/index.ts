@@ -5,6 +5,13 @@ export const LATEST_PRODCUCT_LIMIT = Number(process.env.NEXT_PUBLIC_LATEST_PRODU
 
 // Default values for sign in form testing
 export const signInCredentialsDefaultValues = { 
+    email: 'admin@example.com',
+    password: '123456',
+}
+
+export const signUpDefaultValues = {
+    name: '',
     email: '',
     password: '',
+    confirmPassword: '',
 }

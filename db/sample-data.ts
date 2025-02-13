@@ -6,13 +6,13 @@ const sampleData = {
       name: 'admin',
       email: 'admin@example.com',
       password: hashSync('123456', 10),
-      role: 'admin',
+      role: 'admin', //token role
     },
     {
       name: 'user',
       email: 'user@example.com',
       password: hashSync('123456', 10),
-      role: 'user',
+      role: 'user', //token role
     },
   ],
   products: [
