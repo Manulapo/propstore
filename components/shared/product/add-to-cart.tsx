@@ -2,7 +2,7 @@
 
 import { CartItem } from "@/types";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
