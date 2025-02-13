@@ -33,3 +33,13 @@ export async function formatErrors(error: any) {
       return typeof error.message === 'string' ? error.message : JSON.stringify(error.message);
   }
 }
+
+// round number to 2 decimal places
+export function roundNumber(num: number | string): number {
+  const parsedNum = typeof num === 'string' ? Number(num) : num;
+  if (isNaN(parsedNum)) {
+    throw new Error(`Value ${parsedNum} is not a number or string`);
+  }
+  // EPSILON is used to handle floating point errors in JS
+  return Math.round((parsedNum + Number.EPSILON) * 100) / 100;
+}

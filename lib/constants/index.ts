@@ -15,3 +15,7 @@ export const signUpDefaultValues = {
     password: '',
     confirmPassword: '',
 }
+
+export const freeShippingMinValue = 100;
+export const shippingPriceValue = 10;
+export const taxRate = 0.22;

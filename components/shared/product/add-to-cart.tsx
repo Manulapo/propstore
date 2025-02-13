@@ -15,12 +15,14 @@ const AddToCart = ({ item }: { item: CartItem }) => {
     const handleAddToCart = async () => {
         const res = await addItemToCart(item);
 
+        console.log({ res });
+
         if (!res.success) {
             toast({
                 variant: 'destructive',
                 description: res.message,
             });
-
+            
             return;
         }
 

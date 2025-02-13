@@ -17,8 +17,6 @@ export async function signUpUser(prevState: unknown,
       confirmPassword: formData.get('confirmPassword')
     });
 
-    console.log({ user });
-
     const plainPassword = user.password;
 
     // Hash the password

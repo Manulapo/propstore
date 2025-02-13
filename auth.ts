@@ -4,7 +4,7 @@ import { prisma } from '@/db/prisma'
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compareSync } from 'bcrypt-ts-edge';
-
+import { NextResponse } from 'next/server';
 
 export const config = {
     pages: {
@@ -44,38 +44,76 @@ export const config = {
         })
     ],
     callbacks: {
-        async session({ session, user, trigger, token }: any) {
-            //set userid from the token
-            session.user.id = token.sub; // the sub is the user id that is stored in the token
-            session.user.role = token.role;
-            session.user.name = token.name;
-
-            //if thee is an update ,set the user name (our app allows to change name)
-            if (trigger === 'update') {
-                session.user.name = user.name;
-            }
-
-            return session;
-        }, // This is the provider that is used to authenticate the user. credentials is the provider that is used to authenticate the user using a username and password.
-        async jwt({ token, user }: any) {
-            token.role = user.role;
-
-            // user has no name use the first part of the email as the name
-            if (!user.name || user.name === 'NO_NAME') {
-                const name = user.email.split('@')[0];
-                token.name = name;
-                // update database with the new name
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: { name: token.name }
-                });
-
-                return token;
-            } 
-
+        async session(params: any) {
+            return handleSession(params);
+        },
+        async jwt(params: any) {
+            return handleJwt(params);
+        },
+        async authorized(params: any) {
+            return handleAuthorized(params);
         }
     },
 } satisfies NextAuthConfig;
+
+// This function is used to handle the session of the user.
+async function handleSession({ session, user, trigger, token }: any) {
+    // Set user ID from the token
+    session.user.id = token.sub; // the sub is the user id that is stored in the token
+    session.user.role = token.role;
+    session.user.name = token.name;
+
+    // If there is an update, set the user name (our app allows to change name)
+    if (trigger === 'update') {
+        session.user.name = user.name;
+    }
+
+    return session;
+}
+
+// This function is used to handle the JSON Web Token (JWT) that is used to authenticate the user.
+async function handleJwt({ token, user }: any) {
+    token.role = user.role;
+
+    // User has no name, use the first part of the email as the name
+    if (!user.name || user.name === 'NO_NAME') {
+        const name = user.email.split('@')[0];
+        token.name = name;
+        // Update database with the new name
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name }
+        });
+
+        return token;
+    }
+}
+
+// This function is used to handle the authorized user and create a session cart ID through a cookie.
+async function handleAuthorized({ request }: any) {
+    // Check for session cart cookie
+    if (!request.cookies.get('sessionCartId')) {
+        // Create a session cart ID
+        const sessionCartId = crypto.randomUUID();
+
+        // Clone request headers
+        const newRequestHeaders = new Headers(request.headers);
+
+        // Create new response and add new headers
+        const response = NextResponse.next({
+            request: {
+                headers: newRequestHeaders
+            }
+        });
+
+        // Set cookie
+        response.cookies.set('sessionCartId', sessionCartId);
+
+        return response;
+    } else {
+        return true;
+    }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
@@ -83,5 +121,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth(config);
 // auth -> is the authentication provider that is used to authenticate the user.
 // signIn -> is the function that is used to sign in the user.
 // signOut -> is the function that is used to sign out the user.
-
-

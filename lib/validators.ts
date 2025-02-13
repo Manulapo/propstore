@@ -3,7 +3,12 @@
 import { z } from "zod";
 import { formatPrice } from "./utils";
 
-const currency = z.string().refine((value) => /^\d+(\\.\d{2})?$/.test(formatPrice(Number(value))), 'Price must be a valid number')
+const currency = z
+  .string()
+  .refine(
+    (value) => /^\d+(\.\d{2})?$/.test(formatPrice(Number(value))),
+    'Price must have exactly two decimal places'
+  );
 
 export const insertProductSchema = z.object({
     name: z.string().min(3, 'Name must be at list 3 characters').max(255),
