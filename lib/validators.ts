@@ -33,3 +33,24 @@ export const signUpFormSchema = z.object({
     path: ['confirmPassword']
 });
 
+// Cart item schema
+export const cartItemSchema = z.object({
+    productId: z.string().min(1, 'Product ID is required'),
+    name: z.string().min(3, 'Name is required'),
+    slug: z.string().min(3, 'Slug is required'),
+    qty: z.number().int().nonnegative('Quantity must be a positive number'),
+    image: z.string().min(1, 'Image is required'),
+    price: currency,
+});
+
+// Cart schema
+export const InsertCartSchema = z.object({
+    items: z.array(cartItemSchema).min(1, 'At least one item is required'),
+    itemsPrice: currency,
+    taxPrice: currency,
+    shippingPrice: currency,
+    totalPrice: currency,
+    sessionCartId: z.string().min(1, 'Session cart ID is required'),
+    userId: z.string().optional(), // user can add items to cart without being logged in but then we need to associate the cart with a user when they go further in the checkout process
+});
+
