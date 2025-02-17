@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,7 +18,7 @@ export function formatPrice(price: number): string {
 
 //format errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function formatErrors(error: any) {
+export async function formatErrors(error: any): Promise<string> {
   const { name } = error;
   switch (name) {
     case 'ZodError':
