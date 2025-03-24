@@ -11,4 +11,4 @@ export type ProductType = z.infer<typeof insertProductSchema> & {
 // from zod schema to types of typescript
 export type Cart = z.infer<typeof InsertCartSchema>;
 export type CartItem = z.infer<typeof CartItemSchema>;
-export type shippingAddress = z.infer<typeof ShippingAddressSchema>;
+export type ShippingAddress = z.infer<typeof ShippingAddressSchema>;

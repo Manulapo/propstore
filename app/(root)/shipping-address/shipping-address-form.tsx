@@ -1,6 +1,6 @@
 "use client";
 
-import { shippingAddress } from "@/types";
+import { ShippingAddress } from "@/types";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { ShippingAddressSchema } from "@/lib/validators";
@@ -12,15 +12,17 @@ import {
   FormMessage,
   FormControl,
 } from "@/components/ui/form";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { shippingAddressDefaultValues } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
+import { updateUserAddress } from "@/lib/actions/auth.actions";
+import { toast } from "@/hooks/use-toast";
 
-const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
+const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -29,8 +31,20 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
     defaultValues: address || shippingAddressDefaultValues,
   });
 
-  const onSubmit = async (values) => {
-    
+  const onSubmit: SubmitHandler<z.infer<typeof ShippingAddressSchema>> = async (
+    values
+  ) => {
+    // i wrapped this in a startTransition to prevent the page from reloading and showing the loader while the user is being updated
+    startTransition(async () => {
+      const res = await updateUserAddress(values);
+
+      if (!res.success) {
+        toast({ variant: "destructive", description: res.message });
+        return;
+      }
+
+      router.push("/payment-mehod");
+    });
   };
 
   return (
@@ -50,7 +64,14 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
               <FormField
                 control={form.control}
                 name="fullName"
-                render={({ field } : { field: ControllerRenderProps<z.infer<typeof ShippingAddressSchema>, 'fullName'>}) => (
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    z.infer<typeof ShippingAddressSchema>,
+                    "fullName"
+                  >;
+                }) => (
                   <FormItem className="w-full">
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
@@ -60,12 +81,19 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
                   </FormItem>
                 )}
               />
-              </div>
-              <div className="flex flex-col md:flex-row gap-5">
+            </div>
+            <div className="flex flex-col md:flex-row gap-5">
               <FormField
                 control={form.control}
                 name="streetAddress"
-                render={({ field } : { field: ControllerRenderProps<z.infer<typeof ShippingAddressSchema>, 'streetAddress'>}) => (
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    z.infer<typeof ShippingAddressSchema>,
+                    "streetAddress"
+                  >;
+                }) => (
                   <FormItem className="w-full">
                     <FormLabel>Street Address</FormLabel>
                     <FormControl>
@@ -75,12 +103,19 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
                   </FormItem>
                 )}
               />
-              </div>
-              <div className="flex flex-col md:flex-row gap-5">
+            </div>
+            <div className="flex flex-col md:flex-row gap-5">
               <FormField
                 control={form.control}
                 name="city"
-                render={({ field } : { field: ControllerRenderProps<z.infer<typeof ShippingAddressSchema>, 'city'>}) => (
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    z.infer<typeof ShippingAddressSchema>,
+                    "city"
+                  >;
+                }) => (
                   <FormItem className="w-full">
                     <FormLabel>City</FormLabel>
                     <FormControl>
@@ -90,12 +125,19 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
                   </FormItem>
                 )}
               />
-              </div>
-              <div className="flex flex-col md:flex-row gap-5">
+            </div>
+            <div className="flex flex-col md:flex-row gap-5">
               <FormField
                 control={form.control}
                 name="postalCode"
-                render={({ field } : { field: ControllerRenderProps<z.infer<typeof ShippingAddressSchema>, 'postalCode'>}) => (
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    z.infer<typeof ShippingAddressSchema>,
+                    "postalCode"
+                  >;
+                }) => (
                   <FormItem className="w-full">
                     <FormLabel>Postal Code</FormLabel>
                     <FormControl>
@@ -105,12 +147,19 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
                   </FormItem>
                 )}
               />
-              </div>
-              <div className="flex flex-col md:flex-row gap-5">
+            </div>
+            <div className="flex flex-col md:flex-row gap-5">
               <FormField
                 control={form.control}
                 name="country"
-                render={({ field } : { field: ControllerRenderProps<z.infer<typeof ShippingAddressSchema>, 'country'>}) => (
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    z.infer<typeof ShippingAddressSchema>,
+                    "country"
+                  >;
+                }) => (
                   <FormItem className="w-full">
                     <FormLabel>Country</FormLabel>
                     <FormControl>
@@ -120,12 +169,18 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
                   </FormItem>
                 )}
               />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isPending}>
-                 {isPending ? <Loader className="w-4 h-4 animate-spin" /> :  (<>Continue <ArrowRight className="w-4 h-4" /></>)}
-                 </Button>
-              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <Loader className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    Continue <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
