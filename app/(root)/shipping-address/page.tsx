@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { Metadata } from "next";
-import { Redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { shippingAddress } from "@/types";
 import { getUserById } from "@/lib/actions/auth.actions";
+import ShippingAddressForm from "./shipping-address-form";
 
 export const metadata: Metadata = {
   title: "Shipping Address",
@@ -13,19 +14,21 @@ export const metadata: Metadata = {
 const ShippingAddressPage = async () => {
   const cart = await getMyCart();
   if (!cart || cart.items.length === 0) {
-    return <Redirect to="/cart" />;
+    return redirect("/cart");
   }
 
   const session = await auth();
   const userId = session?.user?.id;
 
   if (!userId) {
-    throw new Error("User not found");
+    return redirect("/sign-in");
   }
 
   const user = await getUserById(userId);
 
-  return <>Address</>;
+  return (
+    <>{<ShippingAddressForm address={user.address as shippingAddress} />}</>
+  );
 };
 
 export default ShippingAddressPage;
