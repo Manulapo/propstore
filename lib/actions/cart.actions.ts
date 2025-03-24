@@ -148,6 +148,7 @@ export const getMyCart = async () => {
         totalPrice: cart.totalPrice.toString(),
         shippingPrice: cart.shippingPrice.toString(),
         taxPrice: cart.taxPrice.toString(),
+        sessionCartId: cart.sessionCartId,
     });
 }
 

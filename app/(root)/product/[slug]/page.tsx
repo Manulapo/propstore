@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
 import { getMyCart } from "@/lib/actions/cart.actions";
+import { Cart } from "@/types";
 
 const ProductDetailsPage = async (props: {
     params: Promise<{ slug: string; }>;
@@ -15,7 +16,7 @@ const ProductDetailsPage = async (props: {
 
     if (!product) notFound() //if product is not found, return 404
 
-    const cart = await getMyCart();
+    const cart = await getMyCart() as Cart;
 
     return (
         <>
