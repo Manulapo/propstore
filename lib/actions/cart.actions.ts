@@ -16,7 +16,7 @@ import {
   formatErrors,
   roundNumber,
 } from "../utils";
-import { cartItemSchema, InsertCartSchema } from "../validators";
+import { CartItemSchema, InsertCartSchema } from "../validators";
 
 // calculate cart prices
 export const calcPrice = async (items: CartItem[]) => {
@@ -62,7 +62,7 @@ export async function addItemToCart(
     const cart = await getMyCart();
 
     // 4. Validate and parse the incoming cart item data.
-    const item = cartItemSchema.parse(data);
+    const item = CartItemSchema.parse(data);
 
     // 5. Retrieve the product from the database.
     const product = await prisma.product.findFirst({

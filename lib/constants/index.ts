@@ -1,3 +1,5 @@
+import { shippingAddress } from "@/types";
+
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'PropStore';
 export const APP_DESCRIPTION = process.env.NEXT_PUBLIC_APP_DESCRIPTION || 'Modern e-commerce for your favorite movies and TV shows.';
 export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
@@ -19,3 +21,13 @@ export const signUpDefaultValues = {
 export const freeShippingMinValue = 100;
 export const shippingPriceValue = 10;
 export const taxRate = 0.22;
+
+export const shippingAddressDefaultValues: shippingAddress = {
+    fullName: 'John Doe',
+    streetAddress: '123 Main Street',
+    city: 'New York',
+    postalCode: '10001',
+    country: 'United States',
+    lat: 40.712776,
+    lng: -74.005974,
+}

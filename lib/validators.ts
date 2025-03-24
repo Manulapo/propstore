@@ -39,7 +39,7 @@ export const signUpFormSchema = z.object({
 });
 
 // Cart item schema
-export const cartItemSchema = z.object({
+export const CartItemSchema = z.object({
     productId: z.string().min(1, 'Product ID is required'),
     name: z.string().min(3, 'Name is required'),
     slug: z.string().min(3, 'Slug is required'),
@@ -50,12 +50,24 @@ export const cartItemSchema = z.object({
 
 // Cart schema
 export const InsertCartSchema = z.object({
-    items: z.array(cartItemSchema).min(1, 'At least one item is required'),
+    items: z.array(CartItemSchema).min(1, 'At least one item is required'),
     itemsPrice: currency,
     taxPrice: currency,
     shippingPrice: currency,
     totalPrice: currency,
     sessionCartId: z.string().min(1, 'Session cart ID is required'),
     userId: z.string().optional(), // user can add items to cart without being logged in but then we need to associate the cart with a user when they go further in the checkout process
+});
+
+// shipping address
+
+export const ShippingAddressSchema = z.object({
+    fullName: z.string().min(3, 'Name must be at least 3 characters'),
+    streetAddress: z.string().min(3, 'Street address must be at least 3 characters'),
+    city: z.string().min(3, 'City must be at least 3 characters'),
+    postalCode: z.string().min(3, 'Postal code must be at least 3 characters'),
+    country: z.string().min(3, 'Country must be at least 3 characters'),
+    lat: z.number().optional(), // optional to get a map of the address
+    lng: z.number().optional(), // optional to get a map of the address
 });
 
