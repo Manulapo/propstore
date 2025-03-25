@@ -4,12 +4,11 @@ import { z } from "zod";
 import { formatPrice } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
 
-const currency = z
-  .string()
-  .refine(
-    (value) => /^\d+(\.\d{2})?$/.test(formatPrice(Number(value))),
-    "Price must have exactly two decimal places"
-  );
+const currency = z.string().refine((value) => {
+  const CURRENCY_REGEX = /^\d+(\.\d{2})?$/;
+  const isMatching = CURRENCY_REGEX.test(formatPrice(Number(value)));
+  return isMatching;
+}, "Price must have exactly two decimal places");
 
 export const insertProductSchema = z.object({
   name: z.string().min(3, "Name must be at list 3 characters").max(255),
@@ -88,3 +87,26 @@ export const PaymentMethodSchema = z
     path: ["type"], // path here is the key of the object that failed the check
     message: "Invalid payment method",
   });
+
+// schema for inserting an order
+export const InsertOrderSchema = z.object({
+  userId: z.string().min(1, "User is required"),
+  itemsPrice: currency,
+  taxPrice: currency,
+  shippingPrice: currency,
+  totalPrice: currency,
+  paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), {
+    message: "Invalid payment method",
+  }),
+  shippingAddress: ShippingAddressSchema,
+});
+
+// schema for insertingAnOrderItem
+export const InsertOrderItemSchema = z.object({
+  productId: z.string().min(1, "Product ID is required"),
+  slug: z.string().min(1, "Slug is required"),
+  name: z.string().min(1, "Name is required"),
+  image: z.string().min(1, "Image is required"),
+  qty: z.number().int().nonnegative("Quantity must be a positive number"),
+  price: currency,
+});
