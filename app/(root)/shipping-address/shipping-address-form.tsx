@@ -36,14 +36,14 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   ) => {
     // i wrapped this in a startTransition to prevent the page from reloading and showing the loader while the user is being updated
     startTransition(async () => {
-      const res = await updateUserAddress(values);
+      const res = await updateUserAddress(values); // update user address after user submits the form
 
       if (!res.success) {
         toast({ variant: "destructive", description: res.message });
         return;
       }
 
-      router.push("/payment-mehod");
+      router.push("/payment-method");
     });
   };
 
