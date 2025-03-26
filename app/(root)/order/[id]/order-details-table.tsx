@@ -19,7 +19,7 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
   const {
     id,
     shippingAddress,
-    orderitems,
+    orderItems,
     itemsPrice,
     shippingPrice,
     taxPrice,
@@ -29,7 +29,7 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
     isDelivered,
     paidAt,
     deliveredAt,
-  } = order;
+  } = order as Order;
 
   return (
     <>
@@ -80,7 +80,7 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orderitems.map((item) => (
+                  {orderItems.map((item) => (
                     <TableRow key={item.slug}>
                       <TableCell>
                         <Link
