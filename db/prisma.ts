@@ -1,30 +1,32 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import { PrismaClient } from "@prisma/client";
-import ws from "ws";
+import { PrismaClient } from '@prisma/client';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool, neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
 
-// Sets up WebSocket connections, which enables Neon to use WebSocket communication.
+// Configure Neon to use WebSockets
 neonConfig.webSocketConstructor = ws;
-const connectionString = `${process.env.DATABASE_URL}`;
 
-// Creates a new connection pool using the provided connection string, allowing multiple concurrent connections.
+// Retrieve the database connection string from environment variables
+const connectionString = process.env.DATABASE_URL;
+
+// Create a connection pool
 const pool = new Pool({ connectionString });
 
-// Instantiates the Prisma adapter using the Neon connection pool to handle the connection between Prisma and Neon.
+// Instantiate the PrismaNeon adapter with the connection pool
 const adapter = new PrismaNeon(pool);
 
-// Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
+// Initialize Prisma Client with the adapter
 export const prisma = new PrismaClient({ adapter }).$extends({
   result: {
     product: {
       price: {
         compute(product) {
-          return product.price.toString(); // Converts the price to a string to prevent typescript errors.
+          return product.price.toString();
         },
       },
       rating: {
         compute(product) {
-          return product.rating.toString(); // Converts the rating to a string to prevent typescript errors.
+          return product.rating.toString();
         },
       },
     },
@@ -32,58 +34,58 @@ export const prisma = new PrismaClient({ adapter }).$extends({
       itemsPrice: {
         needs: { itemsPrice: true },
         compute(cart) {
-          return cart.itemsPrice.toString(); // Converts the itemsPrice to a string to prevent typescript errors.
+          return cart.itemsPrice.toString();
         },
       },
       taxPrice: {
         needs: { taxPrice: true },
         compute(cart) {
-          return cart.taxPrice.toString(); // Converts the taxPrice to a string to prevent typescript errors.
+          return cart.taxPrice.toString();
         },
       },
       shippingPrice: {
         needs: { shippingPrice: true },
         compute(cart) {
-          return cart.shippingPrice.toString(); // Converts the shippingPrice to a string to prevent typescript errors.
+          return cart.shippingPrice.toString();
         },
       },
       totalPrice: {
         needs: { totalPrice: true },
         compute(cart) {
-          return cart.totalPrice.toString(); // Converts the totalPrice to a string to prevent typescript errors.
+          return cart.totalPrice.toString();
         },
       },
     },
     order: {
       itemsPrice: {
         needs: { itemsPrice: true },
-        compute(cart) {
-          return cart.itemsPrice.toString(); // Converts the itemsPrice to a string to prevent typescript errors.
+        compute(order) {
+          return order.itemsPrice.toString();
         },
       },
       taxPrice: {
         needs: { taxPrice: true },
-        compute(cart) {
-          return cart.taxPrice.toString(); // Converts the taxPrice to a string to prevent typescript errors.
+        compute(order) {
+          return order.taxPrice.toString();
         },
       },
       shippingPrice: {
         needs: { shippingPrice: true },
-        compute(cart) {
-          return cart.shippingPrice.toString(); // Converts the shippingPrice to a string to prevent typescript errors.
+        compute(order) {
+          return order.shippingPrice.toString();
         },
       },
       totalPrice: {
         needs: { totalPrice: true },
-        compute(cart) {
-          return cart.totalPrice.toString(); // Converts the totalPrice to a string to prevent typescript errors.
+        compute(order) {
+          return order.totalPrice.toString();
         },
       },
     },
     orderItem: {
       price: {
-        compute(cart) {
-          return cart.price.toString(); // Converts the price to a string to prevent typescript errors.
+        compute(item) {
+          return item.price.toString();
         },
       },
     },
