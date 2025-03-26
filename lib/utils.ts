@@ -58,9 +58,56 @@ const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
 export const formatCurrency = (amount: number | string | null) => {
   if (typeof amount === "number") {
     return CURRENCY_FORMATTER.format(amount);
-  }else if(typeof amount === "string"){
+  } else if (typeof amount === "string") {
     return CURRENCY_FORMATTER.format(parseFloat(amount));
-  }else{
+  } else {
     return NaN;
   }
+};
+
+// shorten uuid for orders
+export function formatid(id: string) {
+  return `..${id.substring(id.length - 6)}`; //example: ..cde123 from 123456cde123
+}
+
+// format date and times
+export const formatDate = (dateString: Date) => {
+  const localOption: string = "en-US";
+  const dateTimeOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric", // numeric year (e.g., '2019')
+    month: "short", // abbreviated month (e.g., 'Jan')
+    day: "numeric", // numeric day (e.g., '1')
+    hour: "numeric", // numeric hour (e.g., '1')
+    minute: "numeric", // numeric minute (e.g., '30')
+  };
+
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric", // numeric year (e.g., '2019')
+    month: "short", // abbreviated month (e.g., 'Jan')
+    day: "numeric", //  numeric day (e.g., '1')
+  };
+
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric", // numeric hour (e.g., '1')
+    minute: "numeric", // numeric minute (e.g., '30')
+  };
+
+  const formattedDateTime: string = new Date(dateString).toLocaleDateString(
+    localOption,
+    dateTimeOptions
+  );
+  const formattedDate: string = new Date(dateString).toLocaleDateString(
+    localOption,
+    dateOptions
+  );
+  const formattedTime: string = new Date(dateString).toLocaleDateString(
+    localOption,
+    timeOptions
+  );
+
+  return {
+    dateTime: formattedDateTime,
+    dateOnly: formattedDate,
+    timeOnly: formattedTime,
+  };
 };
