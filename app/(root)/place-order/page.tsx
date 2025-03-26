@@ -63,11 +63,10 @@ const PlaceOrderPage = async () => {
                 {userAddress.streetAddress}, {userAddress.city}{" "}
                 {userAddress.postalCode}, {userAddress.country}{" "}
               </p>
-              <div className="mt-3">
+              <div className="mt-3 flex justify-end">
                 <Link href="/shipping-address">
                   <Button
                     variant={"outline"}
-                    className="text-blue-500 underline"
                   >
                     Edit
                   </Button>
@@ -79,11 +78,10 @@ const PlaceOrderPage = async () => {
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Payment Method</h2>
               <p>{user.paymentMethod}</p>
-              <div className="mt-3">
+              <div className="mt-3 flex justify-end">
                 <Link href="/payment-method">
                   <Button
                     variant={"outline"}
-                    className="text-blue-500 underline"
                   >
                     Edit
                   </Button>
@@ -110,7 +108,6 @@ const PlaceOrderPage = async () => {
                           href={`/product/${item.slug}`}
                           className="flex items-center"
                         >
-                          {item.name}
                           <Image
                             src={item.image}
                             alt={item.name}
@@ -147,7 +144,7 @@ const PlaceOrderPage = async () => {
               <div>Shipping</div>
               <div>{formatCurrency(cart.shippingPrice)}</div>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between font-bold">
               <div>Total</div>
               <div>{formatCurrency(cart.totalPrice)}</div>
             </div>
