@@ -10,14 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate, formatid } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { Order } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 
 const OrderDetailTable = ({ order }: { order: Order }) => {
   const {
-    id,
     shippingAddress,
     orderItems,
     itemsPrice,
@@ -33,13 +32,13 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
 
   return (
     <>
-      <h1 className="py-4 text-2xl">Order {formatid(order.id)}</h1>
+      <h1 className="py-4 text-2xl"><span className="font-bold">Order</span> {order.id}</h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-4-y overflow-x-auto">
           <Card>
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Payment Method</h2>
-              <p>{paymentMethod}</p>
+              <p className="mb-2">{paymentMethod}</p>
               {isPaid ? (
                 <Badge variant={"secondary"}>
                   Paid at {formatDate(paidAt!).dateTime}
@@ -53,7 +52,7 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Shipping Address</h2>
               <p>{shippingAddress.fullName}</p>
-              <p>
+              <p className="mb-2">
                 {shippingAddress.streetAddress}, {shippingAddress.city}
               </p>
               <p>
@@ -106,6 +105,28 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CardContent className="p-4 gap-4 space-y-4">
+              <div className="flex justify-between">
+                <div>Items</div>
+                <div>{formatCurrency(itemsPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Tax</div>
+                <div>{formatCurrency(taxPrice)}</div>
+              </div>
+              <div className="flex justify-between">
+                <div>Shipping</div>
+                <div>{formatCurrency(shippingPrice)}</div>
+              </div>
+              <div className="flex justify-between font-bold">
+                <div>Total</div>
+                <div>{formatCurrency(totalPrice)}</div>
+              </div>
             </CardContent>
           </Card>
         </div>
