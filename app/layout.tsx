@@ -1,9 +1,12 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import '@/app/styles/globals.css';
-import { ThemeProvider } from 'next-themes';
+import "@/app/styles/globals.css";
+import { ThemeProvider } from "next-themes";
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
 import { Toaster } from "@/components/ui/toaster";
+import { Provider } from "@radix-ui/react-toast";
+import { AppProviders } from "./providers"; // 👈 import the wrapper
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,9 +18,9 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   metadataBase: new URL(SERVER_URL),
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/icon/apple-icon.png',
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/icon/apple-icon.png",
   },
 };
 
@@ -28,17 +31,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.className} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <AppProviders>
+            <Provider>{children}</Provider>
+            <Toaster />
+          </AppProviders>
         </ThemeProvider>
       </body>
     </html>
