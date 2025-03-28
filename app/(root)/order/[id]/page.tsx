@@ -23,8 +23,9 @@ const OrderdetailPage = async (props: { params: Promise<{ id: string }> }) => {
         ...order,
         shippingAddress: order.shippingAddress as ShippingAddress,
         orderItems: order.orderitems,
-        user: { name: order.user.name ?? '', email: order.user.email ?? '' },
+        user: { name: order.user.name ?? "", email: order.user.email ?? "" },
       }}
+      paypalClientId={process.env.PAYPAL_CLIENT_ID ?? "sb"}
     />
   );
 };

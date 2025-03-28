@@ -10,12 +10,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import {
+  approvePayPalOrder,
+  createPayPalOrder,
+} from "@/lib/actions/order-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Order } from "@/types";
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
 import Image from "next/image";
 import Link from "next/link";
 
-const OrderDetailTable = ({ order }: { order: Order }) => {
+const PrintLoadingState = () => {
+  const [{ isPending, isRejected }] = usePayPalScriptReducer();
+  let status = "";
+
+  if (isPending) {
+    status = "Loading PayPal...";
+  } else if (isRejected) {
+    status = "Error loading PayPal";
+  }
+
+  return status;
+};
+
+const OrderDetailTable = ({
+  order,
+  paypalClientId,
+}: {
+  order: Order;
+  paypalClientId: string;
+}) => {
   const {
     shippingAddress,
     orderItems,
@@ -29,10 +58,37 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
     paidAt,
     deliveredAt,
   } = order as Order;
+  const { toast } = useToast();
+
+  const handleCreatePaypalOrder = async () => {
+    const res = await createPayPalOrder(order.id);
+
+    if (!res.success) {
+      toast({
+        description: res.message,
+        variant: "destructive",
+      });
+    }
+
+    return res.data;
+  };
+
+  const handleApprovePaypalOrder = async (data: { orderID: string }) => {
+    const res = await approvePayPalOrder(order.id, {
+      paypalOrderId: data.orderID,
+    });
+
+    toast({
+      description: res.message,
+      variant: res.success ? "default" : "destructive",
+    })
+  };
 
   return (
     <>
-      <h1 className="py-4 text-2xl"><span className="font-bold">Order</span> {order.id}</h1>
+      <h1 className="py-4 text-2xl">
+        <span className="font-bold">Order</span> {order.id}
+      </h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-4-y overflow-x-auto">
           <Card>
@@ -127,6 +183,18 @@ const OrderDetailTable = ({ order }: { order: Order }) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+              {/*Payoal payment*/}
+              {!isPaid && paymentMethod === "PayPal" && (
+                <div>
+                  <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                    <PrintLoadingState />
+                    <PayPalButtons
+                      createOrder={handleCreatePaypalOrder}
+                      onApprove={handleApprovePaypalOrder}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
