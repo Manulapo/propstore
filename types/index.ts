@@ -4,6 +4,7 @@ import {
   InsertOrderItemSchema,
   InsertOrderSchema,
   insertProductSchema,
+  paymentResultSchema,
   ShippingAddressSchema,
 } from "@/lib/validators";
 import { OrderItem } from "@prisma/client";
@@ -37,3 +38,4 @@ export type CartItem = z.infer<typeof CartItemSchema>;
 export type ShippingAddress = z.infer<typeof ShippingAddressSchema>;
 export type InsertOrder = z.infer<typeof InsertOrderSchema>;
 export type InsertOrderItem = z.infer<typeof InsertOrderItemSchema>;
+export type PaymentResult = z.infer<typeof paymentResultSchema>

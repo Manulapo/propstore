@@ -6,8 +6,10 @@ import { getMyCart } from "./cart.actions";
 import { auth } from "@/auth";
 import { getUserById } from "./auth.actions";
 import { InsertOrderSchema } from "../validators";
-import { CartItem } from "@/types";
+import { CartItem, PaymentResult } from "@/types";
 import { prisma } from "@/db/prisma";
+import { paypal } from "../paypal";
+import { revalidatePath } from "next/cache";
 
 // create order and order items
 export async function createOrder() {
@@ -127,3 +129,47 @@ export async function getOrderById(orderId: string) {
 
   return convertPrismaObj(data);
 }
+
+// revalidate path vs refresh: revalidate path is used to revalidate the path of the order page, it is used to update the data of the order page
+
+// create new PayPal order
+export async function createPayPalOrder(orderId: string) {
+  // paypal order id is not the same as the order id in the database, it is used to create the order in the paypal api
+  try {
+    // get order from db
+    const order = await prisma.order.findFirst({
+      where: { id: orderId },
+    });
+
+    if (order) {
+      // the create a new paypaal order
+      const paypalOrder = await paypal.createOrder(Number(order.totalPrice)); // include the total as the price of the order
+
+      // update order with paypal order id
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          paymentResult: {
+            id: paypalOrder.id,
+            email_address: "",
+            status: "",
+            price_paid: 0,
+          },
+          isPaid: false,
+        },
+      });
+
+      return {
+        success: true,
+        message: "PayPal order created successfully",
+        data: paypalOrder.id,
+      };
+    } else {
+      throw new Error("Order not found");
+    }
+  } catch (error) {
+    return { success: false, message: formatErrors(error) };
+  }
+}
+
+
