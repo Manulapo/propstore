@@ -51,10 +51,26 @@ const UserButton = () => {
               </div>
             </div>
           </DropdownMenuLabel>
+          <DropdownMenuItem className="p-0 my-1">
+            <Link
+              href="/user/orders"
+              className="w-full py-2 px-2"
+            >
+              Order History
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="p-0 my-1">
+            <Link
+              href="/user/profile"
+              className="w-full py-2 px-2"
+            >
+              User Profile
+            </Link>
+          </DropdownMenuItem>
 
-          <DropdownMenuItem className="p-0 mb-1">
+          <DropdownMenuItem className="p-0 my-1 border-t-2 border-r-0">
             <Button
-              className="w-full py-4 px-2 h-4 justify-start text-destructive"
+              className="w-full py-4 px-2 h-2 justify-start text-destructive"
               variant="ghost"
               onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
             >

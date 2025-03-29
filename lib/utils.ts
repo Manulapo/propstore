@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import qs from "query-string";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,8 +67,8 @@ export const formatCurrency = (amount: number | string | null) => {
 };
 
 // shorten uuid for orders
-export function formatid(id: string) {
-  return `..${id.substring(id.length - 6)}`; //example: ..cde123 from 123456cde123
+export function formatId(id: string) {
+  return `${id.substring(0, 6)}...${id.substring(id.length - 6)}`; //example: "abc123...xyz789"
 }
 
 // format date and times
@@ -111,3 +112,26 @@ export const formatDate = (dateString: Date) => {
     timeOnly: formattedTime,
   };
 };
+
+// form the pagination links
+export function formUrlQuery({
+  params,
+  key,
+  value,
+}: {
+  params: string;
+  key: string;
+  value: string | null;
+}) {
+  const query = qs.parse(params); // parse the query string into an object i.e.: from "?page=1&sort=asc" to { page: "1", sort: "asc" }
+  query[key] = value; // set the key to the new value
+  const newQuery = qs.stringifyUrl(
+    {
+      url: window.location.pathname,
+      query: query,
+    },
+    { skipNull: true }
+  ); // convert the object back to a query string
+
+  return newQuery;
+}

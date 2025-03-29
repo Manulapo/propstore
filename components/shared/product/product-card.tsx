@@ -6,7 +6,7 @@ import { ProductType } from "@/types/index";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
     return (
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden mx-3">
             <CardHeader className='p-0 items-center'>
                 <Link href={`/product/${product.slug}`}>
                     <Image
