@@ -3,6 +3,7 @@ import { getOrderById } from "@/lib/actions/order-actions";
 import { notFound } from "next/navigation";
 import { ShippingAddress } from "@/types";
 import OrderDetailTable from "./order-details-table";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Order Detail",
@@ -17,6 +18,8 @@ const OrderdetailPage = async (props: { params: Promise<{ id: string }> }) => {
 
   if (!order) return notFound();
 
+  const session = await auth();  
+
   return (
     <OrderDetailTable
       order={{
@@ -26,6 +29,7 @@ const OrderdetailPage = async (props: { params: Promise<{ id: string }> }) => {
         user: { name: order.user.name ?? "", email: order.user.email ?? "" },
       }}
       paypalClientId={process.env.PAYPAL_CLIENT_ID ?? "sb"}
+      isAdmin={session?.user?.role === 'admin' || false}
     />
   );
 };

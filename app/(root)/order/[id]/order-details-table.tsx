@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   approvePayPalOrder,
   createPayPalOrder,
+  updateCODOrderToPaid,
+  deliverOrder,
 } from "@/lib/actions/order-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Order } from "@/types";
@@ -24,6 +26,9 @@ import {
 } from "@paypal/react-paypal-js";
 import Image from "next/image";
 import Link from "next/link";
+import { useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 const PrintLoadingState = () => {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
@@ -38,12 +43,62 @@ const PrintLoadingState = () => {
   return status;
 };
 
+// mark the order as paid
+const MarkAsPaidButton = ({ order }: { order: { id: string } }) => {
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  return (
+    <Button
+      type="button"
+      onClick={() =>
+        startTransition(async () => {
+          const res = await updateCODOrderToPaid(order.id);
+          toast({
+            description: res.message,
+            variant: res.success ? "default" : "destructive",
+          });
+        })
+      }
+      disabled={isPending}
+    >
+      {isPending ? <Loader className="w-4 h-4 animate-spin" /> : "Mark as Paid"}
+    </Button>
+  );
+};
+
+// mark the order as delivered
+const MarkAsDeliveredButton = ({ order }: { order: { id: string } }) => {
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  return (
+    <Button
+      type="button"
+      onClick={() =>
+        startTransition(async () => {
+          const res = await deliverOrder(order.id);
+          toast({
+            description: res.message,
+            variant: res.success ? "default" : "destructive",
+          });
+        })
+      }
+      disabled={isPending}
+    >
+      {isPending ? <Loader className="w-4 h-4 animate-spin" /> : "Mark as Delivered"}
+    </Button>
+  );
+};
+
 const OrderDetailTable = ({
   order,
   paypalClientId,
+  isAdmin,
 }: {
   order: Order;
   paypalClientId: string;
+  isAdmin: boolean;
 }) => {
   const {
     shippingAddress,
@@ -81,7 +136,7 @@ const OrderDetailTable = ({
     toast({
       description: res.message,
       variant: res.success ? "default" : "destructive",
-    })
+    });
   };
 
   return (
@@ -194,6 +249,13 @@ const OrderDetailTable = ({
                     />
                   </PayPalScriptProvider>
                 </div>
+              )}
+              {/*Cash on delivery payment*/}
+              {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (
+                <MarkAsPaidButton order={order} />
+              )}
+              {isAdmin && isPaid && !isDelivered && (
+                <MarkAsDeliveredButton order={order} />
               )}
             </CardContent>
           </Card>
