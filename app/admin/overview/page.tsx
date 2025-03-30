@@ -14,6 +14,7 @@ import { BadgeDollarSign, Barcode, CreditCardIcon, Users } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import Charts from "./chart";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
 };
 
 const AdminOverViewPage = async () => {
+  await requireAdmin(); // Ensure the user is an admin
+  
   const session = await auth(); // to get if the user is an admin
 
   if (session?.user?.role !== "admin") {
