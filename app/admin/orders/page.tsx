@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import DeleteDialog from "@/components/shared/deleteDialog";
 import Pagination from "@/components/shared/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import {
   TableRow,
   Table,
 } from "@/components/ui/table";
-import { getAllOrders } from "@/lib/actions/order-actions";
+import { deleteOrder, getAllOrders } from "@/lib/actions/order-actions";
 import { requireAdmin } from "@/lib/auth-guard";
 import { formatCurrency, formatDate, formatId } from "@/lib/utils";
 import {} from "lucide-react";
@@ -76,22 +77,9 @@ const AdminOrderPage = async (props: {
                 </TableCell>
                 <TableCell>
                   <Button asChild variant={"outline"} size={"sm"}>
-                    <Link
-                      href={`/order/${order.id}`}
-                      className="text-blue-500 hover:underline"
-                    >
-                      Details
-                    </Link>
+                    <Link href={`/order/${order.id}`}>Details</Link>
                   </Button>
-                  {/* delete order */}
-                  <Button
-                    variant={"destructive"}
-                    size={"sm"}
-                    className="ml-2"
-                    onClick={() => deleteOrder(order.id)}
-                  >
-                    Delete
-                  </Button>
+                  <DeleteDialog id={order.id} action={deleteOrder} />
                 </TableCell>
               </TableRow>
             ))}
