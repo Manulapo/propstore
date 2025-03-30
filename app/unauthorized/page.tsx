@@ -15,7 +15,7 @@ const Unauthorized = () => {
         You do not have permission to access this page.
       </p>
       <Link href="/">
-        <Button variant="outline">Return Home</Button>
+        <Button>Return Home</Button>
       </Link>
     </div>
   );
