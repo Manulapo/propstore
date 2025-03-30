@@ -17,6 +17,14 @@ export function formatPrice(price: number): string {
   return decimal ? `${int}.${decimal.padEnd(2, "0")}` : `${int}.00`;
 }
 
+// format number
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US", {
+});
+
+export function formatNumber(num: number): string {
+  return NUMBER_FORMATTER.format(num);
+}
+
 //format errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function formatErrors(error: any): Promise<string> {
