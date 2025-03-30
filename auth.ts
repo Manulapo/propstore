@@ -115,12 +115,14 @@ export const config = {
           }
         }
       }
-
+      
+      // handle session updates for the name field
+      // If the user is updated, we need to update the token with the new name
       if (session?.user.name && trigger === "update") {
         token.name = session.user.name;
       }
-      // When user is undefined, just return the token.
       // In NextAuth, the user object is only provided during the initial sign-in. On subsequent calls (for token refreshes or session validations), only the token is passed, and the user object is expected to be undefined. This is standard behavior.
+      
       return token;
     },
     authorized({ request }: any) {
