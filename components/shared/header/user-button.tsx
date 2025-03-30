@@ -52,21 +52,23 @@ const UserButton = () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuItem className="p-0 my-1">
-            <Link
-              href="/user/orders"
-              className="w-full py-2 px-2"
-            >
+            <Link href="/user/orders" className="w-full py-2 px-2">
               Order History
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="p-0 my-1">
-            <Link
-              href="/user/profile"
-              className="w-full py-2 px-2"
-            >
+            <Link href="/user/profile" className="w-full py-2 px-2">
               User Profile
             </Link>
           </DropdownMenuItem>
+
+          {session.user?.role === 'admin' && (
+            <DropdownMenuItem className="p-0 my-1">
+              <Link href="/admin/overview" className="w-full py-2 px-2">
+                Admin Overview
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem className="p-0 my-1 border-t-2 border-r-0">
             <Button
