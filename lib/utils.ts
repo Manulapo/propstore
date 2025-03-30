@@ -18,8 +18,7 @@ export function formatPrice(price: number): string {
 }
 
 // format number
-const NUMBER_FORMATTER = new Intl.NumberFormat("en-US", {
-});
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US", {});
 
 export function formatNumber(num: number): string {
   return NUMBER_FORMATTER.format(num);
@@ -27,7 +26,7 @@ export function formatNumber(num: number): string {
 
 //format errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function formatErrors(error: any): Promise<string> {
+export function formatErrors(error: any) {
   const { name } = error;
   switch (name) {
     case "ZodError":

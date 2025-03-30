@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Pagination from "@/components/shared/pagination";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Orders",
@@ -63,12 +64,12 @@ const OrdersPage = async (props: {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <a
+                  <Link
                     href={`/order/${order.id}`}
                     className="text-blue-500 hover:underline"
                   >
                     Details
-                  </a>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}
