@@ -11,6 +11,12 @@ import { prisma } from "@/db/prisma";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
 import { PAGE_SIZE } from "../constants";
+import { Prisma } from "@prisma/client";
+
+type SalesDataType = {
+  month: string;
+  totalSales: number;
+}[];
 
 // create order and order items
 export async function createOrder() {
@@ -306,6 +312,50 @@ export async function getMyOrders({
   });
 
   return {
-    data, totalPages: Math.ceil(dataCount / limit), // total pages is the total number of orders divided by the page size
-  }
+    data,
+    totalPages: Math.ceil(dataCount / limit), // total pages is the total number of orders divided by the page size
+  };
+}
+
+// get sales data and order summary
+export async function getOrderSummary() {
+  // get the counts for products, orders, users
+  const ordersCount = await prisma.order.count();
+  const usersCount = await prisma.user.count();
+  const productsCount = await prisma.product.count();
+
+  // calculate the total sales
+  const totalSales = await prisma.order.aggregate({
+    _sum: { totalPrice: true }, // sum the total price of all orders
+  });
+
+  // get montly sales by get forst them with a raw query and then group them by month
+  const salesDataRaw = await prisma.$queryRaw<
+    Array<{ month: string; totalSales: Prisma.Decimal }>
+  >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
+
+  const salesData: SalesDataType = salesDataRaw.map((item) => ({
+    month: item.month,
+    totalSales: Number(item.totalSales),
+  }));
+
+  // get latest sales (latest six)
+  const takeLimit = 6; // limit the number of latest sales to 6
+  const latestSales = await prisma.order.findMany({
+    orderBy: { createdAt: "desc" },
+    take: takeLimit, // get the latest six orders
+    include: {
+      //include allows us to get the order items and the user that made the order
+      user: { select: { name: true } },
+    },
+  });
+
+  return {
+    ordersCount,
+    usersCount,
+    productsCount,
+    totalSales,
+    latestSales,
+    salesData,
+  };
 }
