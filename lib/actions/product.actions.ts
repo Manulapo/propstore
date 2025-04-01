@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
-import { convertPrismaObj, formatErrors } from "../utils";
+import { convertToJSObject, formatErrors } from "../utils";
 import { LATEST_PRODCUCT_LIMIT, PAGE_SIZE } from "../constants";
 import { prisma } from "@/db/prisma";
 import { revalidatePath } from "next/cache";
@@ -15,7 +15,7 @@ export async function getLatestProducts(limit: number = LATEST_PRODCUCT_LIMIT) {
       orderBy: { createdAt: "desc" },
     });
 
-    return convertPrismaObj(products);
+    return convertToJSObject(products);
   } catch (error) {
     console.error("Failed to fetch latest products:", error);
     throw new Error("Failed to fetch latest products");
@@ -28,10 +28,23 @@ export async function getProductBySlug(slug: string) {
       where: { slug },
     });
 
-    return convertPrismaObj(product);
+    return convertToJSObject(product);
   } catch (error) {
     console.error("Failed to fetch product by slug:", error);
     throw new Error("Failed to fetch product by slug");
+  }
+}
+
+export const getProductById = async (productId: string) => {
+  try {
+    const product = await prisma.product.findFirst({
+      where: { id: productId },
+    });
+
+    return convertToJSObject(product);
+  } catch (error) {
+    console.error("Failed to fetch product by ID:", error);
+    throw new Error("Failed to fetch product by ID");
   }
 }
 
@@ -56,7 +69,7 @@ export async function getAllProducts({
   const dataCount = await prisma.product.count();
 
   return {
-    data: convertPrismaObj(data),
+    data: convertToJSObject(data),
     totalPage: Math.ceil(dataCount / limit),
     currentPage: page,
   };

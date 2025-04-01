@@ -12,7 +12,7 @@ import {
   taxRate,
 } from "../constants";
 import {
-  convertPrismaObj as convertToPlainObject,
+  convertToJSObject as convertToPlainObject,
   formatErrors,
   roundNumber,
 } from "../utils";

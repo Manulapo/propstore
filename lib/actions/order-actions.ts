@@ -1,7 +1,7 @@
 "use server";
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { convertPrismaObj, formatErrors } from "../utils";
+import { convertToJSObject, formatErrors } from "../utils";
 import { getMyCart } from "./cart.actions";
 import { auth } from "@/auth";
 import { getUserById } from "./auth.actions";
@@ -134,7 +134,7 @@ export async function getOrderById(orderId: string) {
     data?.orderitems?.map((i) => typeof i.price)
   );
 
-  return convertPrismaObj(data);
+  return convertToJSObject(data);
 }
 
 // revalidate path vs refresh: revalidate path is used to revalidate the path of the order page, it is used to update the data of the order page
