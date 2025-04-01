@@ -320,7 +320,7 @@ const ProductForm = ({
                   alt="product image"
                   width={1920}
                   height={680}
-                  className="w-20 h-20 object-cover object-center rounded-sm"
+                  className="w-full object-cover object-center rounded-sm"
                 />
               )}
 
