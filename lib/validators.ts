@@ -18,7 +18,14 @@ export const insertProductSchema = z.object({
   images: z.array(z.string()).min(1, "At least one image is required"),
   isFeatured: z.boolean(),
   banner: z.string().nullable(),
+  category: z.string().min(3, 'Category must be at least 3 characters'),
+  description: z.string().min(3, 'Description must be at least 3 characters'),
   price: currency,
+});
+
+// schema for updating products since we are using the same form for inserting and updating products, we need to add the id field to the schema
+export const updateProductSchema = insertProductSchema.extend({
+  id: z.string().min(1, "Product ID is required"),
 });
 
 // Schema for sign in form
