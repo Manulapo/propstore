@@ -25,6 +25,7 @@ import { createProduct, updateProduct } from "@/lib/actions/product.actions";
 import { UploadButton } from "@/lib/uploadThing";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
+import { Checkbox } from "../ui/checkbox";
 
 const ProductForm = ({
   type,
@@ -93,6 +94,8 @@ const ProductForm = ({
   };
 
   const images = form.watch("images"); // watch the images field means we can use it to show the images in the upload dropzone
+  const isFeatured = form.watch("isFeatured"); // watch the isFeatured field means we can use it to show the images in the upload dropzone
+  const banner = form.watch("banner"); // watch the banner field means we can use it to show the images in the upload dropzone
 
   return (
     <Form {...form}>
@@ -290,9 +293,56 @@ const ProductForm = ({
               </FormItem>
             )}
           />
-          {/* banner */}
         </div>
-        <div className="upload-field">{/* isFeatured */}</div>
+        <div className="upload-field">
+          {/* isFeatured */}
+          Featured product
+          <Card>
+            <CardContent className="space-y-2 mt-2">
+              <FormField
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="space-x-2 items-center">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Is Featured</FormLabel>
+                  </FormItem>
+                )}
+              />
+              {isFeatured && banner && (
+                <Image
+                  src={banner}
+                  alt="product image"
+                  width={1920}
+                  height={680}
+                  className="w-20 h-20 object-cover object-center rounded-sm"
+                />
+              )}
+
+              {isFeatured && !banner && (
+                // upload button
+                <UploadButton
+                  endpoint={"imageUploader"}
+                  onClientUploadComplete={(res: { url: string }[]) => {
+                    form.setValue("banner", res[0].url);
+                  }}
+                  onUploadError={(err: Error) => {
+                    toast({
+                      title: "Upload Error",
+                      description: `Error uploading image: ${err.message}`,
+                      variant: "destructive",
+                    });
+                  }}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
         <div>
           {/* description */}
           <FormField
