@@ -1,8 +1,8 @@
-import { requireAdmin } from "@/lib/auth-guard";
-import { notFound } from "next/navigation";
 import { getUserById } from "@/lib/actions/user.actions";
+import { requireAdmin } from "@/lib/auth-guard";
 import { Metadata } from "next";
-import { Select } from "@/components/ui/select";
+import { notFound } from "next/navigation";
+import UpdateUserForm from "./update-user-form";
 
 export const metadata: Metadata = {
   title: "Update User",
@@ -20,7 +20,8 @@ const AdminUsersUpdatePage = async (props: {
   return (
     <>
       <div className="space-y-8 max-w-lg mx-auto">
-        
+        <h1 className="h2-bold">Update user</h1>
+        <UpdateUserForm user={user} />
       </div>
     </>
   );

@@ -15,6 +15,7 @@ import {
 } from "../validators";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 export async function signUpUser(prevState: unknown, formData: FormData) {
   try {
@@ -95,17 +96,31 @@ export const signOutUser = async () => {
 };
 
 // get user by id
-export const getUserById = async (id: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id },
+export async function getUserById(userId: string): Promise<{
+  email: string;
+  password: string | null;
+  id: string;
+  createdAt: Date;
+  paymentMethod: string | null;
+  name: string;
+  image: string | null;
+  emailVerified: Date | null;
+  updatedAt: Date;
+  role: string;
+  address: JsonValue | null;
+}> {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
   });
 
-  if (!user) {
-    throw new Error("User not found");
+  if (!user || !user.email || !user.name) {
+    throw new Error(
+      "User not found or missing required fields (email or name)"
+    );
   }
 
-  return user;
-};
+  return { ...user, email: user.email, name: user.name };
+}
 
 // update the users address
 export async function updateUserAddress(data: ShippingAddress) {
@@ -212,7 +227,7 @@ export async function deleteUserById(id: string) {
       where: { id },
     });
     revalidatePath("/admin/users"); // revalidate the users page to reflect the changes
-    
+
     return { success: true, message: "User deleted successfully" };
   } catch (error) {
     return { success: false, message: formatErrors(error) };

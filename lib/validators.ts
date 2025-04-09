@@ -118,6 +118,7 @@ export const InsertOrderItemSchema = z.object({
   price: currency,
 });
 
+// schema for updating an order
 export const paymentResultSchema = z.object({
   id: z.string().min(1, "ID is required"),
   status: z.string().min(1, "Status is required"),
@@ -125,14 +126,15 @@ export const paymentResultSchema = z.object({
   price_paid: z.string(),
 });
 
-// schema for user profile updte
-export const UpdateUserProfileSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
-  email: z.string().min(3, "Name must be at least 3 characters"),
+// Schema for updating the user profile
+export const updateProfileSchema = z.object({
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  email: z.string().min(3, 'Email must be at least 3 characters'),
 });
 
-// schema to update users
-export const UpdateUserSchema = UpdateUserProfileSchema.extend({
-  id: z.string().min(1, "User ID is required"),
-  role: z.string().min(1, "Role is required"),
+// Schema to update users
+export const updateUserSchema = updateProfileSchema.extend({
+  id: z.string().min(1, 'ID is required'),
+  role: z.string().min(1, 'Role is required'),
 });
+
