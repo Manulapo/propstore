@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { updateProfile } from "@/lib/actions/auth.actions";
+import { updateProfile } from "@/lib/actions/user.actions";
 import { UpdateUserProfileSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";

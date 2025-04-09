@@ -19,7 +19,7 @@ import { shippingAddressDefaultValues } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
-import { updateUserAddress } from "@/lib/actions/auth.actions";
+import { updateUserAddress } from "@/lib/actions/user.actions";
 import { toast } from "@/hooks/use-toast";
 
 const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {

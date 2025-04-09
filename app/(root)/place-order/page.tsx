@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getUserById } from "@/lib/actions/auth.actions";
+import { getUserById } from "@/lib/actions/user.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { ShippingAddress } from "@/types";

@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getUserById } from "@/lib/actions/auth.actions";
+import { getUserById } from "@/lib/actions/user.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { ShippingAddress } from "@/types";
 import { Metadata } from "next";
