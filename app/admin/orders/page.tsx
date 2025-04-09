@@ -23,11 +23,11 @@ export const metadata: Metadata = {
 };
 
 const AdminOrderPage = async (props: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }) => {
   await requireAdmin(); // Ensure the user is an admin
 
-  const { page = "1" } = await props.searchParams; // Get the page from search params
+  const { page = "1", query: searchText } = await props.searchParams; // Get the page from search params and renamed query to searchText
   const session = await auth(); // Get the session
 
   if (!session || !session.user || session?.user?.role !== "admin") {
@@ -36,17 +36,33 @@ const AdminOrderPage = async (props: {
 
   const orders = await getAllOrders({
     page: Number(page), // Convert page to number
+    query: searchText, // No query for orders
   });
 
   return (
     <div className="space-y-2">
-      <h2 className="h2-bold">Orders</h2>
+      <div className="flex-between">
+        <div className="flex items-center gap-3">
+          <h1 className="h2-bold">Orders</h1>
+          {searchText && (
+            <div>
+              Filtered by <i>&quot;{searchText}&quot;</i>
+              <Link href="/admin/orders">
+                <Button variant="outline" size="sm" className="ml-5">
+                  Clear Filter
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Buyer</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Paid</TableHead>
               <TableHead>Delivered</TableHead>
@@ -60,6 +76,8 @@ const AdminOrderPage = async (props: {
                   {formatId(order.id)}
                 </TableCell>
                 <TableCell>{formatDate(order.createdAt).dateTime}</TableCell>
+                <TableCell>{order.user.name}</TableCell>
+
                 <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                 <TableCell>
                   <Badge variant={"secondary"}>

@@ -1,16 +1,21 @@
 "use client";
 
 import { useToast } from "@/hooks/use-toast";
+import { createProduct, updateProduct } from "@/lib/actions/product.actions";
 import { productDefaultValues } from "@/lib/constants";
+import { UploadButton } from "@/lib/uploadThing";
 import { insertProductSchema, updateProductSchema } from "@/lib/validators";
 import { ProductType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
 import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import {
   Form,
   FormControl,
@@ -21,11 +26,6 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { createProduct, updateProduct } from "@/lib/actions/product.actions";
-import { UploadButton } from "@/lib/uploadThing";
-import { Card, CardContent } from "../ui/card";
-import Image from "next/image";
-import { Checkbox } from "../ui/checkbox";
 
 const ProductForm = ({
   type,

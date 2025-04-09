@@ -7,6 +7,7 @@ import { prisma } from "@/db/prisma";
 import { revalidatePath } from "next/cache";
 import { insertProductSchema, updateProductSchema } from "../validators";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 export async function getLatestProducts(limit: number = LATEST_PRODCUCT_LIMIT) {
   try {
@@ -46,7 +47,7 @@ export const getProductById = async (productId: string) => {
     console.error("Failed to fetch product by ID:", error);
     throw new Error("Failed to fetch product by ID");
   }
-}
+};
 
 // return all the products with pagination
 export async function getAllProducts({
@@ -60,7 +61,25 @@ export async function getAllProducts({
   limit?: number;
   category?: string;
 }) {
+  // Query filter
+  const queryFilter: Prisma.ProductWhereInput =
+    query && query !== "all"
+      ? {
+          name: {
+            contains: query,
+            mode: "insensitive",
+          } as Prisma.StringFilter,
+        }
+      : {};
+
+  // Category filter
+  const categoryFilter = category && category !== "all" ? { category } : {};
+
   const data = await prisma.product.findMany({
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+    },
     orderBy: { createdAt: "desc" },
     skip: (Number(page) - 1) * limit,
     take: limit,

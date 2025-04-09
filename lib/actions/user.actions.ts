@@ -17,6 +17,7 @@ import {
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { JsonValue } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 
 export async function signUpUser(prevState: unknown, formData: FormData) {
   try {
@@ -203,11 +204,23 @@ export async function updateProfile(user: { name: string; email: string }) {
 export async function getAllUsers({
   limit = PAGE_SIZE,
   page,
+  query,
 }: {
   limit?: number;
   page: number;
+  query: string;
 }) {
+  const queryFilter: Prisma.UserWhereInput =
+    query && query !== "all"
+      ? {
+          name: { contains: query, mode: "insensitive" } as Prisma.StringFilter,
+        }
+      : {}; // filter by query or empty object
+
   const data = await prisma.user.findMany({
+    where: {
+      ...queryFilter,
+    },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit, // page - 1 because page is 1 indexed and skip is 0 indexed
