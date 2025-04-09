@@ -18,6 +18,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { updateUser } from "@/lib/actions/user.actions";
 import { USER_ROLES } from "@/lib/constants";
 import { updateUserSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,11 +44,39 @@ const UpdateUserForm = ({
     },
   });
 
-  const handleSubmit = async () => {};
+  const onSubmit = async (values: z.infer<typeof updateUserSchema>) => {
+    try {
+      const res = await updateUser({ ...values, id: user.id });
+
+      if (!res.success) {
+        toast({
+          title: "Error",
+          description: res.message,
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Success",
+        description: res.message,
+      });
+
+      form.reset(); // Reset the form after successful submission
+      router.push("/admin/users"); // Redirect to the users page
+
+    } catch (error) {
+      // Handle redirect errors from Next.js
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Form {...form}>
-      <form method="POST" onSubmit={handleSubmit}>
+      <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
         {/* Email */}
         <div>
           <FormField
@@ -75,7 +104,6 @@ const UpdateUserForm = ({
             )}
           />
         </div>
-        {/* Name */}
         <div>
           <FormField
             control={form.control}

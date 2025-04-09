@@ -12,6 +12,7 @@ import {
   ShippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
+  updateUserSchema,
 } from "../validators";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
@@ -229,6 +230,24 @@ export async function deleteUserById(id: string) {
     revalidatePath("/admin/users"); // revalidate the users page to reflect the changes
 
     return { success: true, message: "User deleted successfully" };
+  } catch (error) {
+    return { success: false, message: formatErrors(error) };
+  }
+}
+
+// update user
+export async function updateUser(user: z.infer<typeof updateUserSchema>) {
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name: user.name,
+        role: user.role,
+      },
+    });
+    revalidatePath("/admin/users/");
+
+    return { success: true, message: "User updated successfully" };
   } catch (error) {
     return { success: false, message: formatErrors(error) };
   }
