@@ -7,6 +7,8 @@ import {
 } from "@/lib/actions/product.actions";
 import Link from "next/link";
 
+const ratings = [1, 2, 3, 4, 5];
+const sortOrders = ["Newest", "Oldest", "Highest", "Lowest", "Rating"];
 const prices = [
   { name: "1$ to 50$", value: "1-50" },
   { name: "51$ to 100$", value: "51-100" },
@@ -15,9 +17,52 @@ const prices = [
   { name: "500$+", value: "500-10000" },
 ];
 
-const ratings = [1, 2, 3, 4, 5];
+const isNotGeneric = (value: string) => {
+  return value && value !== "all" && value.trim() !== "";
+};
 
-const sortOrders = ["Newest", "Oldest", "Highest", "Lowest", "Rating"];
+export async function generateMetadata(props: {
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+    price?: string;
+    sort?: string;
+    page?: string;
+    rating?: string;
+  }>;
+}) {
+  const {
+    q = "all",
+    category = "all",
+    price = "all",
+    page = "1",
+    sort = "newest",
+    rating = "all",
+  } = await props.searchParams;
+
+  const isQuerySet = isNotGeneric(q);
+  const isCategorySet = isNotGeneric(category);
+  const isPriceSet = isNotGeneric(price);
+  const isRatingSet = isNotGeneric(rating);
+  const isPageSet = isNotGeneric(page);
+  const isSortSet = isNotGeneric(sort);
+
+  if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
+    return {
+      title: `Search ${isQuerySet ? q : ""} ${
+        isCategorySet ? `Category ${category}` : ""
+      } ${isPriceSet ? `Price ${price}` : ""} ${
+        isRatingSet ? `Rating ${rating}` : ""
+      }`,
+      description: `Search results for ${q} in ${category} category with price range ${price} and rating ${rating}`,
+    };
+  } else {
+    return {
+      title: "Search Products",
+      description: "Search for products",
+    };
+  }
+}
 
 const SearchPage = async (props: {
   searchParams: Promise<{
@@ -170,34 +215,32 @@ const SearchPage = async (props: {
       <div className="space-y-4 md:col-span-4">
         <div className="flex-between flex-col md:flex-row my-4">
           <div className="flex items-center">
-            {q !== "all" && q !== "" && (
+            {isNotGeneric(q) && (
               <>
                 <span className="font-semibold">Search: </span> {q}
               </>
             )}
-            {category !== "all" && category !== "" && (
+            {isNotGeneric(category) && (
               <>
                 <span className="font-semibold ml-4">Category: </span>{" "}
                 {category}
               </>
             )}
-            {price !== "all" && price !== "" && (
+            {isNotGeneric(price) && (
               <>
-                <span className="font-semibold ml-4">Price: </span>{" "}
-                {price + "$"}
+                <span className="font-semibold ml-4">Price: </span> {price}
               </>
             )}
-            {rating !== "all" && rating !== "" && (
+            {isNotGeneric(rating) && (
               <>
-                <span className="font-semibold ml-4">Rating: </span>
-                {rating + " stars"}
+                <span className="font-semibold ml-4">Rating: </span> {rating}
               </>
             )}
             &nbsp;
-            {(q !== "all" && q !== "") ||
-            (category !== "all" && category !== "") ||
-            (price !== "all" && price !== "") ||
-            (rating !== "all" && rating !== "") ? (
+            {isNotGeneric(q) ||
+            isNotGeneric(category) ||
+            isNotGeneric(price) ||
+            isNotGeneric(rating) ? (
               <Button variant={"link"} asChild>
                 <Link href={"/search"}>Clear all</Link>
               </Button>
