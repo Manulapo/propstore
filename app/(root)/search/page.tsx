@@ -51,8 +51,8 @@ export async function generateMetadata(props: {
     return {
       title: `Search ${isQuerySet ? q : ""} ${
         isCategorySet ? `Category ${category}` : ""
-      } ${isPriceSet ? `Price ${price}` : ""} ${
-        isRatingSet ? `Rating ${rating}` : ""
+      } ${isPriceSet ? `Price ${price}$` : ""} ${
+        isRatingSet ? `Rating ${rating} & up` : ""
       }`,
       description: `Search results for ${q} in ${category} category with price range ${price} and rating ${rating}`,
     };
