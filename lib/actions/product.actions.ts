@@ -80,11 +80,27 @@ export async function getAllProducts({
 
   // Category filter
   const categoryFilter = category && category !== "all" ? { category } : {};
+  // Sort filter
+  const priceFilter: Prisma.ProductWhereInput = price && price !== "all" ? {
+    price: {
+      gte: Number(price.split("-")[0]), //greater than or equal to the first value
+      lte: Number(price.split("-")[1]), //less than or equal to the second value
+    } as Prisma.IntFilter,
+  } : {};
+  // Rating filter
+  const ratingFilter: Prisma.ProductWhereInput = rating && rating !== "all" ? {
+    rating: {
+      gte: Number(rating), //greater than or equal to the value
+    } as Prisma.IntFilter,
+  } : {};
+  
 
   const data = await prisma.product.findMany({
     where: {
       ...queryFilter,
       ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
     },
     orderBy: { createdAt: "desc" },
     skip: (Number(page) - 1) * limit,
