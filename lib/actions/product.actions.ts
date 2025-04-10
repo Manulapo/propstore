@@ -81,19 +81,39 @@ export async function getAllProducts({
   // Category filter
   const categoryFilter = category && category !== "all" ? { category } : {};
   // Sort filter
-  const priceFilter: Prisma.ProductWhereInput = price && price !== "all" ? {
-    price: {
-      gte: Number(price.split("-")[0]), //greater than or equal to the first value
-      lte: Number(price.split("-")[1]), //less than or equal to the second value
-    } as Prisma.IntFilter,
-  } : {};
+  const priceFilter: Prisma.ProductWhereInput =
+    price && price !== "all"
+      ? {
+          price: {
+            gte: Number(price.split("-")[0]), //greater than or equal to the first value
+            lte: Number(price.split("-")[1]), //less than or equal to the second value
+          } as Prisma.IntFilter,
+        }
+      : {};
   // Rating filter
-  const ratingFilter: Prisma.ProductWhereInput = rating && rating !== "all" ? {
-    rating: {
-      gte: Number(rating), //greater than or equal to the value
-    } as Prisma.IntFilter,
-  } : {};
-  
+  const ratingFilter: Prisma.ProductWhereInput =
+    rating && rating !== "all"
+      ? {
+          rating: {
+            gte: Number(rating), //greater than or equal to the value
+          } as Prisma.IntFilter,
+        }
+      : {};
+
+  const sortFilter = () => {
+    switch (sort) {
+      case "lowest":
+        return { price: "asc" as Prisma.SortOrder };
+      case "highest":
+        return { price: "desc" as Prisma.SortOrder };
+      case "rating":
+        return { rating: "desc" as Prisma.SortOrder };
+      case "oldest":
+        return { createdAt: "asc" as Prisma.SortOrder };
+      default:
+        return { createdAt: "desc" as Prisma.SortOrder };
+    }
+  };
 
   const data = await prisma.product.findMany({
     where: {
@@ -102,7 +122,7 @@ export async function getAllProducts({
       ...priceFilter,
       ...ratingFilter,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: sortFilter(),
     skip: (Number(page) - 1) * limit,
     take: limit,
   });

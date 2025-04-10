@@ -17,6 +17,8 @@ const prices = [
 
 const ratings = [1, 2, 3, 4, 5];
 
+const sortOrders = ["Newest", "Oldest", "Highest", "Lowest", "Rating"];
+
 const SearchPage = async (props: {
   searchParams: Promise<{
     q?: string;
@@ -200,6 +202,18 @@ const SearchPage = async (props: {
                 <Link href={"/search"}>Clear all</Link>
               </Button>
             ) : null}
+          </div>
+          <div>
+            Sort by:
+            {sortOrders.map((x) => (
+              <Link
+                key={x}
+                className={`${sort === x.toLowerCase() && "font-bold"} mx-2`}
+                href={getFilterURL({ s: x.toLowerCase() })}
+              >
+                {x}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
