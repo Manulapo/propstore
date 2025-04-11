@@ -4,26 +4,30 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Stripe from "stripe";
 
+// Initialize Stripe client
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
-const SuccessPage = async (props: {
-  params: Promise<{ id: string }>;
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
   searchParams: { payment_intent: string };
-}) => {
-  const { id } = await props.params;
-  const { payment_intent: paymentIntentId } = props.searchParams;
+}) {
+  const { id } = params;
+  const { payment_intent: paymentIntentId } = searchParams;
 
   const order = await getOrderById(id);
   if (!order) notFound();
 
-  //   retrieve paymentintent through stripe paymentintent id
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
   if (
     !paymentIntent ||
-    paymentIntent.metadata.orderId === null || // we got orderid when we created the payment intent.metadata object in the order detail page
+    !paymentIntent.metadata.orderId ||
     paymentIntent.metadata.orderId !== order.id.toString()
-  )
+  ) {
     notFound();
+  }
 
   const isPaymentIntentSucceeded = paymentIntent.status === "succeeded";
   if (!isPaymentIntentSucceeded) return redirect(`/order/${id}`);
@@ -39,6 +43,4 @@ const SuccessPage = async (props: {
       </div>
     </div>
   );
-};
-
-export default SuccessPage;
+}
