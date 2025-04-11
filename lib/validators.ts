@@ -1,8 +1,8 @@
 //Schemafor inserting products
 
 import { z } from "zod";
-import { formatPrice } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
+import { formatPrice } from "./utils";
 
 const currency = z.string().refine((value) => {
   const CURRENCY_REGEX = /^\d+(\.\d{2})?$/;
@@ -128,13 +128,21 @@ export const paymentResultSchema = z.object({
 
 // Schema for updating the user profile
 export const updateProfileSchema = z.object({
-  name: z.string().min(3, 'Name must be at least 3 characters'),
-  email: z.string().min(3, 'Email must be at least 3 characters'),
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  email: z.string().min(3, "Email must be at least 3 characters"),
 });
 
 // Schema to update users
 export const updateUserSchema = updateProfileSchema.extend({
-  id: z.string().min(1, 'ID is required'),
-  role: z.string().min(1, 'Role is required'),
+  id: z.string().min(1, "ID is required"),
+  role: z.string().min(1, "Role is required"),
 });
 
+// schema to insert reviews
+export const insertReviewSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  descriprion: z.string().min(3, "Description must be at least 3 characters"),
+  productId: z.string().min(1, "Product ID is required"),
+  userId: z.string().min(1, "User ID is required"),
+  rating: z.coerce.number().int().min(1, "Rating must be at least 1").max(5), // coerce to number to allow for string input
+});
