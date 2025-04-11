@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth, { NextAuthConfig } from "next-auth";
 import { prisma } from "@/db/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
-import { NextResponse } from "next/server";
+import NextAuth, { NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 
 export const config = {
@@ -124,48 +123,6 @@ export const config = {
       // In NextAuth, the user object is only provided during the initial sign-in. On subsequent calls (for token refreshes or session validations), only the token is passed, and the user object is expected to be undefined. This is standard behavior.
       
       return token;
-    },
-    authorized({ request }: any) {
-      // protect route path if not logged in
-      // Array of regex pattern of protected routes
-      const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
-        /\/profile-page/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ]
-
-      // get pathname from request
-      const { pathname } = request.nextUrl;
-
-      // check if user is not authenticated and pathname is in protectedPaths
-      if(!auth && protectedPaths.some((path) => path.test(pathname))) return false;
-
-      // This is a callback that is used to check if the user is authorized to access the page.
-      if (!request.cookies.get("sessionCartId")) {
-        // Generate new session cart id cookie
-        const sessionCartId = crypto.randomUUID();
-
-        // Clone the req headers
-        const newRequestHeaders = new Headers(request.headers);
-
-        // Create new response and add the new headers
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
-        });
-
-        // Set newly generated sessionCartId in the response cookies
-        response.cookies.set("sessionCartId", sessionCartId);
-
-        return response;
-      } else {
-        return true;
-      }
     },
   },
 } satisfies NextAuthConfig;
