@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { updateProfile } from "@/lib/actions/user.actions";
-import { UpdateUserProfileSchema } from "@/lib/validators";
+import { updateProfileSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -19,8 +19,8 @@ import { z } from "zod";
 
 const ProfileForm = () => {
   const { data: session, update } = useSession();
-  const form = useForm<z.infer<typeof UpdateUserProfileSchema>>({
-    resolver: zodResolver(UpdateUserProfileSchema),
+  const form = useForm<z.infer<typeof updateProfileSchema>>({
+    resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       name: session?.user?.name || "",
       email: session?.user?.email || "",
@@ -29,7 +29,7 @@ const ProfileForm = () => {
 
   const { toast } = useToast();
 
-  const onSubmit = async (values: z.infer<typeof UpdateUserProfileSchema>) => {
+  const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {
     const res = await updateProfile(values);
 
     if (!res.success) {

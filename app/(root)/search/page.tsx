@@ -32,20 +32,16 @@ export async function generateMetadata(props: {
   }>;
 }) {
   const {
-    q = "all",
-    category = "all",
-    price = "all",
-    page = "1",
-    sort = "newest",
-    rating = "all",
+    q = 'all',
+    category = 'all',
+    price = 'all',
+    rating = 'all',
   } = await props.searchParams;
 
   const isQuerySet = isNotGeneric(q);
   const isCategorySet = isNotGeneric(category);
   const isPriceSet = isNotGeneric(price);
   const isRatingSet = isNotGeneric(rating);
-  const isPageSet = isNotGeneric(page);
-  const isSortSet = isNotGeneric(sort);
 
   if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
     return {
