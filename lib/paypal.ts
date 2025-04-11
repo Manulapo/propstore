@@ -1,3 +1,5 @@
+import { CURRENCY_CODE } from "./constants";
+
 const base = process.env.PAYPAL_API_URL || "https://api-m.sandbox.paypal.com";
 
 export const paypal = {
@@ -16,7 +18,7 @@ export const paypal = {
         purchase_units: [
           {
             amount: {
-              currency_code: "USD", // this is the currency code of the order, it is used to specify the currency of the order, in this case, it is USD
+              currency_code: CURRENCY_CODE, // this is the currency code of the order, it is used to specify the currency of the order, in this case, it is USD
               value: price.toString(), // this is the value of the order, it is used to specify the amount of the order, in this case, it is the price passed to the function
             },
           },

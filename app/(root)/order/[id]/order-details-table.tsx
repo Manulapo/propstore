@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
+import StripePayment from "./stripe-payment";
 
 const PrintLoadingState = () => {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
@@ -86,7 +87,11 @@ const MarkAsDeliveredButton = ({ order }: { order: { id: string } }) => {
       }
       disabled={isPending}
     >
-      {isPending ? <Loader className="w-4 h-4 animate-spin" /> : "Mark as Delivered"}
+      {isPending ? (
+        <Loader className="w-4 h-4 animate-spin" />
+      ) : (
+        "Mark as Delivered"
+      )}
     </Button>
   );
 };
@@ -95,10 +100,12 @@ const OrderDetailTable = ({
   order,
   paypalClientId,
   isAdmin,
+  stripeClientSecret,
 }: {
   order: Order;
   paypalClientId: string;
   isAdmin: boolean;
+  stripeClientSecret: string;
 }) => {
   const {
     shippingAddress,
@@ -238,7 +245,7 @@ const OrderDetailTable = ({
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
-              {/*Payoal payment*/}
+              {/*Paypal payment*/}
               {!isPaid && paymentMethod === "PayPal" && (
                 <div>
                   <PayPalScriptProvider options={{ clientId: paypalClientId }}>
@@ -249,6 +256,14 @@ const OrderDetailTable = ({
                     />
                   </PayPalScriptProvider>
                 </div>
+              )}
+              {/* Stripe payment */}
+              {!isPaid && paymentMethod === "Stripe" && (
+                <StripePayment
+                  priceInCents={Math.round(Number(totalPrice) * 100)}
+                  clientSecret={stripeClientSecret}
+                  orderId={order.id}
+                />
               )}
               {/*Cash on delivery payment*/}
               {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (

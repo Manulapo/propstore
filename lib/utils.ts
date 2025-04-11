@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import { CURRENCY_CODE } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,7 +59,7 @@ export function roundNumber(num: number | string): number {
 
 //currenccy formatter
 const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
-  currency: "USD",
+  currency: CURRENCY_CODE,
   style: "currency",
   minimumFractionDigits: 2,
 });
