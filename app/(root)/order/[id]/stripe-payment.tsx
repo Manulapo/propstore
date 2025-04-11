@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { SERVER_URL } from "@/lib/constants";
 import {
   Elements,
+  LinkAuthenticationElement,
   PaymentElement,
   useElements,
   useStripe,
@@ -33,11 +35,48 @@ const StripePayment = ({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [email, setEmail] = useState<string>("");
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (stripe === null || email === null || elements === null) return;
+      setIsLoading(true);
+      stripe
+        .confirmPayment({
+          elements,
+          confirmParams: {
+            //this is the redirect url after payment
+            return_url: `${SERVER_URL}/order/${orderId}/stripe-payment/success`,
+          },
+        })
+        .then(({ error }) => {
+          switch (error?.type) {
+            case "card_error":
+            case "validation_error":
+              setErrorMessage(error.message ?? "An unknown error occurred");
+              break;
+            case "api_error":
+              setErrorMessage(
+                "An error occurred while processing your payment"
+              );
+              break;
+            default:
+              setErrorMessage("An unknown error occurred");
+          }
+        })
+        .finally(() => setIsLoading(false));
+    };
+
     return (
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="text-xl">Stripe Checkout</div>
         {errorMessage && <div className="text-destructive">{errorMessage}</div>}
         <PaymentElement />
+        <div>
+          <LinkAuthenticationElement
+            onChange={(e) => {
+              setEmail(e.value.email);
+            }}
+          />
+        </div>
         <Button
           className="w-full"
           size="lg"
