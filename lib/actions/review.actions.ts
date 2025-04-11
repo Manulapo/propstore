@@ -90,7 +90,7 @@ export async function creatUpdateReview(
 }
 
 // get all reviews for a product
-export async function getProductReviews(productId: string) {
+export async function getProductReviews({ productId }: { productId: string }) {
   const data = await prisma.review.findMany({
     where: { productId },
     orderBy: { createdAt: "desc" },
@@ -107,11 +107,13 @@ export async function getProductReviews(productId: string) {
 }
 
 // get review by user
-export async function getReviewByProductId({productId}:{
+export async function getReviewByProductId({
+  productId,
+}: {
   productId: string;
 }) {
   const session = await auth();
-  if(!session) throw new Error("User not authenticated");
+  if (!session) throw new Error("User not authenticated");
   const userId = session.user.id;
 
   return await prisma.review.findFirst({
@@ -120,5 +122,4 @@ export async function getReviewByProductId({productId}:{
       productId,
     },
   });
-  
 }
