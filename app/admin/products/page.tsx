@@ -74,7 +74,7 @@ const AdminProductPage = async (props: {
               <TableCell>{product.rating}</TableCell>
               <TableCell className="flex gap-1">
                 <Button asChild variant="outline" size="icon" className="px-6">
-                  <Link href={`/admin/product/${product.slug}`}>View</Link>
+                  <Link href={`/product/${product.slug}`}>View</Link>
                 </Button>
                 <Button asChild variant="outline" size="icon" className="px-4">
                   <Link href={`/admin/products/${product.id}`}>Edit</Link>
