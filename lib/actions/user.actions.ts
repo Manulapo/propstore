@@ -18,6 +18,7 @@ import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
+import { getMyCart } from "./cart.actions";
 
 export async function signUpUser(prevState: unknown, formData: FormData) {
   try {
@@ -94,6 +95,9 @@ export async function signinUserWithCredentials(
 }
 
 export const signOutUser = async () => {
+  // get current users cart and delete it so it does not persist to next user
+  const currentCart = await getMyCart();
+  await prisma.cart.delete({ where: { id: currentCart?.id } });
   await signOut({ redirect: true });
 };
 
