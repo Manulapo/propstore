@@ -26,8 +26,17 @@ const ReviewList = ({
   ProductSlug: string;
 }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const reload = () => {
-    console.log("reviewSubmitted");
+  const reload = async () => {
+    const res = await getProductReviews({ productId });
+    setReviews(
+      res.data.map((review) => ({
+        ...review,
+        user: {
+          ...review.user,
+          name: review.user.name || "",
+        },
+      }))
+    );
   };
 
   useEffect(() => {
