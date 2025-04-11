@@ -129,11 +129,6 @@ export async function getOrderById(orderId: string) {
     },
   });
 
-  console.log(
-    "Order raw data:",
-    data?.orderitems?.map((i) => typeof i.price)
-  );
-
   return convertToJSObject(data);
 }
 
