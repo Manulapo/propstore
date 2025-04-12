@@ -6,12 +6,13 @@ import { getMyCart } from "./cart.actions";
 import { auth } from "@/auth";
 import { getUserById } from "./user.actions";
 import { InsertOrderSchema } from "../validators";
-import { CartItem, PaymentResult } from "@/types";
+import { CartItem, PaymentResult, ShippingAddress } from "@/types";
 import { prisma } from "@/db/prisma";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
 import { PAGE_SIZE } from "../constants";
 import { Prisma } from "@prisma/client";
+import { sendPurchaseReceipt } from "@/email";
 
 type SalesDataType = {
   month: string;
@@ -278,6 +279,23 @@ export async function updateOrderToPaid({
     });
 
     if (!updatedOrder) throw new Error("Order not found");
+
+    sendPurchaseReceipt({
+      order: {
+        ...updatedOrder,
+        user: {
+          ...updatedOrder.user,
+          name: updatedOrder.user.name || "",
+          email: updatedOrder.user.email || "",
+        },
+        shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+        paymentResult: updatedOrder.paymentResult as PaymentResult,
+        orderItems: updatedOrder.orderitems.map((item) => ({
+          ...item,
+          price: item.price.toString(),
+        })),
+      },
+    }); // send purchase receipt email to user
   } catch (error) {
     return formatErrors(error);
   }
