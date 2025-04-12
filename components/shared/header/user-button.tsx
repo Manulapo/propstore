@@ -8,21 +8,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserIcon } from "lucide-react";
+import { Loader, UserIcon } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const UserButton = () => {
-  const { data: session, status } = useSession();
-
-  console.log("🧪 useSession status:", status);
-  console.log("🧪 useSession data:", session);
+  const { data: session, status } = useSession(); //! get why the session takes a while to load and before it is unahuthenticated 
 
   if (status === "loading") {
     return (
       <Button variant="ghost" disabled>
         <UserIcon className="mr-2 h-4 w-4 animate-pulse" />
-        Loading...
+        <Loader className="animate-spin h-4 w-4" />
       </Button>
     );
   }
