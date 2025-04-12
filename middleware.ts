@@ -26,18 +26,25 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  console.log("MIDDLEWARE RUN:", pathname);
-  console.log("TOKEN:", token);
-  console.log("COOKIES IN REQUEST:", request.cookies.getAll());
-
   const isProtected = protectedPaths.some((p) => p.test(pathname));
 
   if (!token && isProtected) {
-    console.log("🚫 Utente non autenticato, redirect a /sign-in");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  if (!request.cookies.get("sessionCartId")) {
+    const sessionCartId = crypto.randomUUID();
+    response.cookies.set("sessionCartId", sessionCartId, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  return response;
 }
 
 export const config = {
