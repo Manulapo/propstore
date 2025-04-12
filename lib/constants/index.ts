@@ -71,3 +71,5 @@ export const reviewFormDefaultValues = {
   comment: "",
   productId: "",
 };
+
+export const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
