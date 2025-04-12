@@ -1,11 +1,11 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "@/app/styles/globals.css";
-import { ThemeProvider } from "next-themes";
-import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
 import { Toaster } from "@/components/ui/toaster";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 import { Provider } from "@radix-ui/react-toast";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google";
 import { AppProviders } from "./providers"; // 👈 import the wrapper
 
 const inter = Inter({ subsets: ["latin"] });
