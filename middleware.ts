@@ -13,17 +13,12 @@ const protectedPaths = [
 ];
 
 export async function middleware(request: NextRequest) {
-  const cookieName =
-    process.env.NODE_ENV === "production"
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token";
+  console.log("🧪 CUSTOM LOG TEST - middleware reached");
 
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
-    cookieName,
   });
-
   const { pathname } = request.nextUrl;
 
   console.log("MIDDLEWARE RUN:", pathname);
@@ -51,3 +46,4 @@ export const config = {
     "/admin/:path*",
   ],
 };
+
