@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
   console.log("MIDDLEWARE RUN:", pathname);
   console.log("TOKEN:", token);
-  console.log("COOKIES IN REQUEST:", request.cookies.getAll()); // ← Add this
+  console.log("COOKIES IN REQUEST:", request.cookies.getAll()); 
 
   const isProtected = protectedPaths.some((p) => p.test(pathname));
 
@@ -33,7 +33,6 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// ✅ Apply middleware only to protected routes
 export const config = {
   matcher: [
     "/shipping-address",
