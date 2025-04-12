@@ -14,15 +14,25 @@ import Link from "next/link";
 
 const UserButton = () => {
   const { data: session, status } = useSession();
+
   console.log("🧪 useSession status:", status);
   console.log("🧪 useSession data:", session);
-  
 
-  if (!session) {
+  if (status === "loading") {
+    return (
+      <Button variant="ghost" disabled>
+        <UserIcon className="mr-2 h-4 w-4 animate-pulse" />
+        Loading...
+      </Button>
+    );
+  }
+
+  if (status === "unauthenticated" || !session) {
     return (
       <Button asChild>
         <Link href="/sign-in">
-          <UserIcon /> Sign in
+          <UserIcon className="mr-2 h-4 w-4" />
+          Sign in
         </Link>
       </Button>
     );
@@ -54,6 +64,7 @@ const UserButton = () => {
               </div>
             </div>
           </DropdownMenuLabel>
+
           <DropdownMenuItem className="p-0 my-1">
             <Link href="/user/orders" className="w-full py-2 px-2">
               Order History
@@ -65,7 +76,7 @@ const UserButton = () => {
             </Link>
           </DropdownMenuItem>
 
-          {session.user?.role === 'admin' && (
+          {session.user?.role === "admin" && (
             <DropdownMenuItem className="p-0 my-1">
               <Link href="/admin/overview" className="w-full py-2 px-2">
                 Admin Overview
