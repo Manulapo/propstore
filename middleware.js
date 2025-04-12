@@ -12,6 +12,8 @@ const protectedPaths = [
 ];
 
 export async function middleware(request) {
+  throw new Error("🔥 TEST: middleware file is definitely running");
+
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
