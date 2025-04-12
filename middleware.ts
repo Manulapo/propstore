@@ -2,15 +2,15 @@ import { getToken } from "next-auth/jwt"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const protectedPaths = [
-  /\/shipping-address/,
-  /\/payment-method/,
-  /\/place-order/,
-  /\/profile-page/,
-  /\/user\/(.*)/,
-  /\/order\/(.*)/,
-  /\/admin/,
-]
+// const protectedPaths = [
+//   /\/shipping-address/,
+//   /\/payment-method/,
+//   /\/place-order/,
+//   /\/profile-page/,
+//   /\/user\/(.*)/,
+//   /\/order\/(.*)/,
+//   /\/admin/,
+// ]
 
 export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
@@ -19,7 +19,8 @@ export async function middleware(request: NextRequest) {
     console.log("MIDDLEWARE RUN:", pathname)
     console.log("TOKEN:", token)
   
-    const isProtected = protectedPaths.some((p) => p.test(pathname))
+    // const isProtected = protectedPaths.some((p) => p.test(pathname))
+    const isProtected = false 
   
     if (!token && isProtected) {
       console.log("🔒 Utente non autenticato, redirect a /sign-in")
