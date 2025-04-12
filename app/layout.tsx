@@ -16,7 +16,11 @@ export const metadata: Metadata = {
     default: APP_NAME,
   },
   description: APP_DESCRIPTION,
-  metadataBase: new URL(SERVER_URL),
+  metadataBase: new URL(
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_SERVER_URL!
+      : "http://localhost:3000"
+  ),
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",

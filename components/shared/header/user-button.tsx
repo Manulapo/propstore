@@ -13,7 +13,10 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const UserButton = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  console.log("🧪 useSession status:", status);
+  console.log("🧪 useSession data:", session);
+  
 
   if (!session) {
     return (
