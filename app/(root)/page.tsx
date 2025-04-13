@@ -4,6 +4,7 @@ import ProductCarousel from "@/components/shared/product/product-carousel";
 import ProductList from "@/components/shared/product/product-list";
 import ViewAllProducts from "@/components/view-all-product";
 import { getLatestProducts } from "@/lib/actions/product.actions";
+import promoObject from '@/public/promo/promo.json';
 
 const HomePage = async () => {
   const latestProducts = await getLatestProducts(4);
@@ -16,8 +17,9 @@ const HomePage = async () => {
       )}
       <ProductList data={latestProducts} title="Newest Arrival" limit={4} />
       <ViewAllProducts />
-      <DealCountDown targetDate={"31-12-2025"} orientation="left" />
-      <DealCountDown targetDate={"31-06-2025"} orientation="right" />
+      <DealCountDown promoObject={promoObject.monthPromo} orientation="left" />
+      <DealCountDown promoObject={promoObject.weeklyPromo} orientation="right" />
+      
 
       <IconBoxes />
     </>

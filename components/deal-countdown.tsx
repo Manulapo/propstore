@@ -22,10 +22,10 @@ const calculateTimeRemaining = (targetDate: Date) => {
 };
 
 const DealCountDown = ({
-  targetDate,
+  promoObject,
   orientation = "right",
 }: {
-  targetDate: string;
+  promoObject: Record<string, string>;
   orientation?: "left" | "right";
 }) => {
   const [time, setTime] = useState({
@@ -34,6 +34,8 @@ const DealCountDown = ({
     minutes: 0,
     seconds: 0,
   });
+
+  const { title, description, image, targetDate, link } = promoObject || {};
 
   const countDownDate = parseDate(targetDate);
 
@@ -57,8 +59,8 @@ const DealCountDown = ({
   const PromoImageHTML = () => (
     <div className="flex justify-center">
       <Image
-        src={"/images/promo.jpg"}
-        alt="Deal of the Month"
+        src={image}
+        alt={title}
         width={500}
         height={500}
         className="object-cover"
@@ -68,13 +70,8 @@ const DealCountDown = ({
 
   const PromoTextHTML = () => (
     <div className="flex flex-col gap-2 justify-center">
-      <h3 className="text-3xl font-bold">Deal of the Month</h3>
-      <p>
-        Get ready for a shopping experience like never before with our Deals of
-        the Month! Every purchase comes with exclusive perks and offers, making
-        this month a celebration of savvy choices and amazing deals. Don&apos;t
-        miss out!
-      </p>
+      <h3 className="text-3xl font-bold">{title}</h3>
+      <p>{description}</p>
       <ul className="grid grid-cols-4">
         <StatBox label="Days" value={time.days} />
         <StatBox label="Hours" value={time.hours} />
@@ -88,7 +85,7 @@ const DealCountDown = ({
         )}
       >
         <Button asChild>
-          <Link href={"/search"}>View More</Link>
+          <Link href={link ?? "/search"}>View More</Link>
         </Button>
       </div>
     </div>
@@ -109,7 +106,7 @@ const DealCountDown = ({
     );
   }
 
-  if(time.days === 0 && time.hours === 0 && time.minutes === 0) {
+  if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
     return (
       <section className="grid grid-cols-1 md:grid-cols-2 my-20">
         <div className="flex flex-col gap-2 justify-center">
@@ -117,7 +114,9 @@ const DealCountDown = ({
             The deal has expired
           </h3>
           <p className="text-mutedforeground">
-            The deal has ended, but don&apos;t worry! We have more exciting offers coming up soon. Stay tuned for our next big sale and exclusive discounts. Thank you for your interest!
+            The deal has ended, but don&apos;t worry! We have more exciting
+            offers coming up soon. Stay tuned for our next big sale and
+            exclusive discounts. Thank you for your interest!
           </p>
         </div>
       </section>

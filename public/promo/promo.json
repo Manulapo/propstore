@@ -1,0 +1,16 @@
+{
+    "monthPromo": {
+        "title": "Deal of the Month",
+        "description": "Get ready for a shopping experience like never before with our Deals of the Month! Every purchase comes with exclusive perks and offers, making this month a celebration of savvy choices and amazing deals. Don't miss out!",
+        "image": "/images/promo.jpg",
+        "link": "/promo",
+        "targetDate": "22-05-2025"
+    },
+    "weeklyPromo": {
+        "title": "Weekly Specials",
+        "description": "Discover our Weekly Specials, where every week brings new surprises and exclusive offers just for you! Stay tuned for the latest deals and make the most of your shopping experience.",
+        "image": "/images/promo.jpg",
+        "link": "/promo",
+        "targetDate": "10-05-2025"
+    }
+}
