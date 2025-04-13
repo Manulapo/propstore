@@ -46,11 +46,12 @@ export const paypal = {
 
 // generate paypal access token
 async function generateAccessToken() {
-  const { PAYPAL_CLIENT_ID, PAYPAL_SECRET_ID } = process.env;
+  const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+
   // now i have to generate the access token using the client id and secret id but in base64 format, i use Buffer.from to convert the string to base64 format
   //buffer is a global object in nodejs, it is used to handle binary data, it is not a constructor, it is a class that is used to create buffer objects and then convert them to base64 format when needed.
   // the format is "client_id:secret_id"
-  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET_ID}`).toString(
+  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString(
     "base64"
   );
 
