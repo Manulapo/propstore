@@ -121,6 +121,13 @@ export const formatDate = (dateString: Date) => {
   };
 };
 
+// Helper function to parse dd-mm-yyyy format
+export const parseDate = (dateString: string): number => {
+    const [day, month, year] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day).getTime();
+  };
+  
+
 // form the pagination links
 export function formUrlQuery({
   params,
