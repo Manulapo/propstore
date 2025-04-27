@@ -4,7 +4,7 @@
         "description": "Get ready for a shopping experience like never before with our Deals of the Month! Every purchase comes with exclusive perks and offers, making this month a celebration of savvy choices and amazing deals. Don't miss out!",
         "image": "/images/promo.jpg",
         "link": "/promo",
-        "targetDate": "22-05-2025"
+        "targetDate": "22-03-2025"
     },
     "weeklyPromo": {
         "title": "Weekly Specials",

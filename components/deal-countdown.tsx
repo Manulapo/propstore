@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { cn, parseDate } from "@/lib/utils";
 
 // todo: make a json file with dates, images and text for the promo
@@ -15,9 +15,9 @@ const calculateTimeRemaining = (targetDate: Date) => {
     days: Math.floor(timeDifference / (1000 * 60 * 60 * 24)),
     hours: Math.floor(
       (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    ), // remainer of what is left from a day and then convert to hours
-    minutes: Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)), // remainer of what is left from an hour and then convert to minutes
-    seconds: Math.floor((timeDifference % (1000 * 60)) / 1000), // remainer of what is left from a minute and then convert to seconds
+    ),
+    minutes: Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((timeDifference % (1000 * 60)) / 1000),
   };
 };
 
@@ -36,7 +36,6 @@ const DealCountDown = ({
   });
 
   const { title, description, image, targetDate, link } = promoObject || {};
-
   const countDownDate = parseDate(targetDate);
 
   useEffect(() => {
@@ -54,18 +53,21 @@ const DealCountDown = ({
     }
 
     return () => clearInterval(interval);
-  }, [countDownDate]);
+  }, [time, countDownDate]);
 
-  const PromoImageHTML = () => (
-    <div className="flex justify-center">
-      <Image
-        src={image}
-        alt={title}
-        width={500}
-        height={500}
-        className="object-cover"
-      />
-    </div>
+  const promoImage = useMemo(
+    () => (
+      <div className="flex justify-center">
+        <Image
+          src={image}
+          alt={title}
+          width={500}
+          height={500}
+          className="object-cover"
+        />
+      </div>
+    ),
+    [image, title]
   );
 
   const PromoTextHTML = () => (
@@ -92,23 +94,14 @@ const DealCountDown = ({
   );
 
   if (!countDownDate) {
-    return (
-      <section className="grid grid-cols-1 md:grid-cols-2 my-20">
-        <div className="flex flex-col gap-2 justify-center">
-          <h3 className="text-3xl font-bold text-destructive">
-            ERROR: Wrong Date schema
-          </h3>
-          <p className="text-mutedforeground">
-            Please provide a valid date in the format DD-MM-YYYY
-          </p>
-        </div>
-      </section>
-    );
+    console.warn(`Invalid date format for: ${title} \n The date is: ${targetDate}`);
+    return null; 
   }
 
   if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
     return (
-      <section className="grid grid-cols-1 md:grid-cols-2 my-20">
+      <section className="grid grid-cols-2 md:grid-cols-2 my-20">
+        <div className="saturate-0">{promoImage}</div>
         <div className="flex flex-col gap-2 justify-center">
           <h3 className="text-3xl font-bold text-destructive">
             The deal has expired
@@ -127,11 +120,11 @@ const DealCountDown = ({
     <section className="grid grid-cols-1 md:grid-cols-2 my-20">
       {orientation === "left" ? (
         <>
-          <PromoImageHTML /> <PromoTextHTML />
+          {promoImage} <PromoTextHTML />
         </>
       ) : (
         <>
-          <PromoTextHTML /> <PromoImageHTML />
+          <PromoTextHTML /> {promoImage}
         </>
       )}
     </section>
