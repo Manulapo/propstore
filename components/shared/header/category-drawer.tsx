@@ -19,7 +19,7 @@ const CategoryDrawer = async () => {
     <div>
       <Drawer direction="left">
         <DrawerTrigger asChild>
-          <Button variant="outline">
+          <Button variant="ghost">
             <MenuIcon />
           </Button>
         </DrawerTrigger>

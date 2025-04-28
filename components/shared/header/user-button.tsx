@@ -13,12 +13,12 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const UserButton = () => {
-  const { data: session, status } = useSession(); //! get why the session takes a while to load and before it is unahuthenticated 
+  const { data: session, status } = useSession(); 
 
   if (status === "loading") {
     return (
       <Button variant="ghost" disabled>
-        <UserIcon className="mr-2 h-4 w-4 animate-pulse" />
+        <UserIcon className="mr-2 h-4 w-4 animate-pulse"  />
         <Loader className="animate-spin h-4 w-4" />
       </Button>
     );
@@ -44,7 +44,7 @@ const UserButton = () => {
           <div className="flex items-center">
             <Button
               variant="ghost"
-              className="relative w-8 h-8 rounded-full ml-2 flex items-center justify-center bg-gray-200"
+              className="relative w-8 h-8 rounded-full ml-2 flex items-center justify-center bg-secondary"
             >
               {firstInitial}
             </Button>

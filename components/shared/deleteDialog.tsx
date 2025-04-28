@@ -27,7 +27,6 @@ const DeleteDialog = ({
   const { toast } = useToast();
 
   const handleDeleteClick = async () => {
-    console.log("Deleting item with id:", id);
     startTransition(async () => {
       const res = await action(id); // Call the action with the id passed in as a prop
       if (!res.success) {

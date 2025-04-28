@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { Cart } from "@/types";
 import { ArrowRight, Loader, Minus, Plus } from "lucide-react";
 import Image from "next/image";
@@ -27,12 +27,24 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
 
   return (
     <>
-      <h1 className="py-4 h2-bold">Shopping Cart</h1>
-      {!cart || cart.items.length === 0 ? (
+      <div className={cn("flex items-center mt-6 gap-6", !cart || cart.items.length === 0 && "justify-center")}>
+        <Image
+          src={"/images/logo.svg"}
+          alt="empty cart"
+          width={80}
+          height={80}
+          className="opacity-60"
+        />
         <div>
-          Cart is Empty <Link href={"/"}>Go Shopping</Link>
+          <h1 className="pt-4 py-1 h2-bold">Shopping Cart</h1>
+          {!cart || cart.items.length === 0 ? (
+            <div>
+              Cart is Empty <Link href={"/"}>Go Shopping</Link>
+            </div>
+          ) : null}
         </div>
-      ) : (
+      </div>
+      {cart && cart.items.length > 0 && (
         <div className="grid md:grid-cols-4 md:gap-5">
           <div className="overflow-x-auto md:col-span-3">
             <Table>

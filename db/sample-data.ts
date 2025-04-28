@@ -1,5 +1,44 @@
 import { hashSync } from "bcrypt-ts-edge";
 
+export const uuids: string[] = [
+  "147ec2d6-7eec-4b05-9597-5ee2a2985755",
+  "52c44caf-0321-4f31-9924-df0b18b1abda",
+  "d1b6ae5f-cf73-4f0b-9b70-251a783a579d",
+  "5c37496a-fa68-4e99-ad0a-00010cac126d",
+  "77c9af03-6c69-4ab5-8d3e-e2aba94aac00",
+  "0f60e8a1-6258-44a5-a0e5-73616a995415",
+  "0920c36a-a1a1-4dd3-ad49-e0fb0137744a",
+  "0373f9c6-d574-4b38-b4d9-54dfc92d9029",
+  "52b7908e-90fe-4bb9-b414-4a93aabbb956",
+  "7f705283-f294-4947-9ffd-9b37c6af8231",
+  "9e8cf9b6-cb47-4eb5-a5c0-ec7955f369ee",
+  "4b403be2-c573-4ef2-8244-1416e3ed7d42",
+  "68129245-5903-48fc-b969-8ccf1cc55879",
+  "585ccfec-68cb-4ae0-866c-87988f6996d8",
+  "2a1779d3-4f54-4efb-9686-935e56272be8",
+  "626fff22-6f33-497c-a916-d6818021e562",
+  "f04d69dc-17ad-4895-85e7-6bde76d189b3",
+  "beba05e7-d6f2-4607-b006-1948e1e796ed",
+  "25537637-3419-4678-a08b-09990a636c4c",
+  "7fd77c43-6054-4cef-9319-2abeac4101dc",
+  "0ec51240-342b-4da4-9b03-732bc1a8f23e",
+  "c5ef1d1a-36dd-4d02-ac41-4c0dae988cd4",
+  "18961c2e-7282-4787-bbce-81b7a7ed6020",
+  "d53bf990-8d6e-4d7c-a1d5-251b20181266",
+  "dd7eb726-7f27-469d-8786-da342b9e3e4a",
+  "5439b945-ca97-400b-8e99-e8d09901a223",
+  "cd7dea2d-e9df-4c4a-8992-bf63da2321e6",
+  "1d8bb470-1cec-4f86-a09b-09609d8d3317",
+  "56795b37-f78f-4e4c-a60e-bbaed678012b",
+  "a7a0f750-d848-49c4-bb6f-37f65e955a48",
+  "7707227b-69c6-466f-a40f-a5fc92044238",
+  "244bb801-060f-468f-aa27-968e6132f28e",
+  "2a2b456f-8dc3-42c3-be74-e217fdeca370",
+  "9454d0ef-1b9f-4715-a6b3-4bb04687dbee",
+  "2407164f-22e8-487b-82a3-651eb4db16f1",
+];
+
+
 const sampleData = {
   users: [
     {

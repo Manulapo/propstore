@@ -1,6 +1,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuContent, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import { setThemeCookie } from "@/lib/actions/app.actions";
 import { MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -12,7 +13,8 @@ const ThemeModeToggle = () => {
 
     useEffect(() => {
         setMOunted(true);
-    }, []);
+        setThemeCookie(theme ?? 'light');
+    }, [theme]);
 
     if (!mounted) return null;
 
