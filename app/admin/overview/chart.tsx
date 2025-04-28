@@ -6,8 +6,10 @@ const Charts = ({
 }: {
   salesData: { month: string; totalSales: number }[];
 }) => {
+  if (salesData.length > 12) {
+    salesData = salesData.slice(salesData.length - 12); // Get last 12 months
+  }
   salesData = salesData
-    .slice(salesData.length - 12) // Get last 12 months
     .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()); // Sort by month
 
   return (

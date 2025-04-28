@@ -327,6 +327,7 @@ const ProductForm = ({
               {isFeatured && !banner && (
                 // upload button
                 <UploadButton
+                  className="rounded-full"
                   endpoint={"imageUploader"}
                   onClientUploadComplete={(res: { url: string }[]) => {
                     form.setValue("banner", res[0].url);

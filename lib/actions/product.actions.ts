@@ -1,21 +1,26 @@
 "use server";
 
-import { convertToJSObject, formatErrors } from "../utils";
-import { LATEST_PRODCUCT_LIMIT, PAGE_SIZE } from "../constants";
 import { prisma } from "@/db/prisma";
-import { revalidatePath } from "next/cache";
-import { insertProductSchema, updateProductSchema } from "../validators";
-import { z } from "zod";
 import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { LATEST_PRODCUCT_LIMIT, PAGE_SIZE } from "../constants";
+import { convertToJSObject, formatErrors, shuffleArray } from "../utils";
+import { insertProductSchema, updateProductSchema } from "../validators";
 
-export async function getLatestProducts(limit: number = LATEST_PRODCUCT_LIMIT) {
+export async function getLatestProducts(
+  limit: number = LATEST_PRODCUCT_LIMIT,
+  shuffle = false
+) {
   try {
     const products = await prisma.product.findMany({
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
 
-    return convertToJSObject(products);
+    return shuffle
+      ? shuffleArray(convertToJSObject(products))
+      : convertToJSObject(products);
   } catch (error) {
     console.error("Failed to fetch latest products:", error);
     throw new Error("Failed to fetch latest products");
@@ -57,14 +62,16 @@ export async function getAllProducts({
   sort,
   price,
   rating,
+  shuffle = false,
 }: {
   query: string;
   page: number;
-  limit?: number;
+  limit?: number | null;
   category?: string;
   sort?: string;
   price?: string;
   rating?: string;
+  shuffle?: boolean;
 }) {
   // Query filter
   const queryFilter: Prisma.ProductWhereInput =
@@ -122,15 +129,17 @@ export async function getAllProducts({
       ...ratingFilter,
     },
     orderBy: sortFilter(),
-    skip: (Number(page) - 1) * limit,
-    take: limit,
+    skip: limit ? (Number(page) - 1) * limit : 0,
+    take: limit ? limit : undefined,
   });
 
   const dataCount = await prisma.product.count();
 
   return {
-    data: convertToJSObject(data),
-    totalPage: Math.ceil(dataCount / limit),
+    data: shuffle
+      ? shuffleArray(convertToJSObject(data))
+      : convertToJSObject(data),
+    totalPage: limit ? Math.ceil(dataCount / limit) : 1,
     currentPage: page,
   };
 }
@@ -235,6 +244,16 @@ export async function getFeaturedProducts(take = 4) {
     where: { isFeatured: true },
     orderBy: { createdAt: "desc" },
     take,
+  });
+
+  return convertToJSObject(data);
+}
+
+// get puducts by category
+export async function getProductsByCategory(category: string) {
+  const data = await prisma.product.findMany({
+    where: { category },
+    orderBy: { createdAt: "desc" },
   });
 
   return convertToJSObject(data);

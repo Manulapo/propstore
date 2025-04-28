@@ -28,23 +28,26 @@ const Rating = ({ value, caption }: { value: number; caption?: string }) => {
   );
 
   const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      if (value >= i) {
-        stars.push(<Full key={i} />);
-      } else if (value >= i - 0.5) {
-        stars.push(<Half key={i} />);
-      } else {
-        stars.push(<Empty key={i} />);
-      }
+    if (value >= 4.5) {
+      return <Full />;
+    } else if (value >= 3 - 0.5) {
+      return <Half />;
+    } else {
+      return <Empty />;
     }
-    return stars;
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2  justify-between items-center">
       <div className="flex gap-1">
-        {value === 0 ? (<p className="text-sm text-muted-foreground">Not Rated yet</p>) : renderStars()}
+        {value === 0 ? (
+          <p className="text-sm text-muted-foreground">Not Rated yet</p>
+        ) : (
+          <>
+            <span className="text-sm">{value}</span>
+            {renderStars()}
+          </>
+        )}
       </div>
 
       {caption && <span className="text-sm">{caption}</span>}

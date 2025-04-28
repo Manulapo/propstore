@@ -1,7 +1,7 @@
 // prisma/seed_sales.ts
 
-import { PrismaClient } from "@prisma/client";
 import { faker } from '@faker-js/faker';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,7 @@ async function main() {
   const users = await prisma.user.findMany({ select: { id: true } });
 
   // Generate 20 random orders
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 26; i++) {
     const user = faker.helpers.arrayElement(users);
     const itemCount = faker.number.int({ min: 1, max: 5 });
 
@@ -30,13 +30,14 @@ async function main() {
     });
 
     const itemsPrice = orderItems.reduce((sum, it) => sum + it.price * it.qty, 0);
-    const shippingPrice = 15;
+    const shippingPrice = 10;
     const taxPrice = parseFloat((itemsPrice * 0.1).toFixed(2));
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
     const isPaid = faker.datatype.boolean();
     const paidAt = isPaid ? faker.date.recent() : null;
     const isDelivered = isPaid && faker.datatype.boolean();
     const deliveredAt = isDelivered ? faker.date.recent() : null;
+    const createdAt = faker.date.past({ years: 1 });
 
     await prisma.order.create({
       data: {
@@ -62,6 +63,7 @@ async function main() {
         paidAt,
         isDelivered,
         deliveredAt,
+        createdAt,
         orderitems: { create: orderItems },
       },
     });

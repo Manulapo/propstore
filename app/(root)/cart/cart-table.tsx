@@ -1,5 +1,6 @@
 "use client";
 
+import AppLogo from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -27,14 +28,13 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
 
   return (
     <>
-      <div className={cn("flex items-center mt-6 gap-6", !cart || cart.items.length === 0 && "justify-center")}>
-        <Image
-          src={"/images/logo.svg"}
-          alt="empty cart"
-          width={80}
-          height={80}
-          className="opacity-60"
-        />
+      <div
+        className={cn(
+          "flex items-center mt-6 gap-6",
+          !cart || (cart.items.length === 0 && "justify-center")
+        )}
+      >
+        <AppLogo size={60}/>
         <div>
           <h1 className="pt-4 py-1 h2-bold">Shopping Cart</h1>
           {!cart || cart.items.length === 0 ? (

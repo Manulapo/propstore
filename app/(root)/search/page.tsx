@@ -118,6 +118,7 @@ const SearchPage = async (props: {
     page: Number(page),
     price,
     rating,
+    limit: null,
   });
 
   const categories = await getAllCategories();
