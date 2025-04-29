@@ -12,18 +12,15 @@ import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import ThemeModeToggle from "./theme-mode-toggle";
 import UserButton from "./user-button";
-import { auth } from "@/auth";
 
 const Menu = async () => {
-  const session = await auth();
   let cartItemCount = 0;
-  if (session) {
-    const cart = await getMyCart();
-    cartItemCount =
-      cart && cart.items.length > 0
-        ? cart.items.reduce((acc, item) => acc + item.qty, 0)
-        : 0;
-  }
+
+  const cart = await getMyCart();
+  cartItemCount =
+    cart && cart.items.length > 0
+      ? cart.items.reduce((acc, item) => acc + item.qty, 0)
+      : 0;
 
   return (
     <div className="flex justify-end gap-3">
