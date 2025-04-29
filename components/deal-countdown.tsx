@@ -116,7 +116,7 @@ const DealCountDown = ({
   }
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 my-20">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-6 my-20">
       {orientation === "left" ? (
         <>
           {promoImage} <PromoTextHTML />

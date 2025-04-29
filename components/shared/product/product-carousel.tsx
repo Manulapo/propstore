@@ -23,10 +23,9 @@ const ProductCarousel = ({
 }) => {
   return (
     <>
-      <Heading icon={icon} title={title} />
       <Carousel
-        className="w-full my-12"
-        opts={{ loop: false }}
+        className="my-12 px-4"
+        opts={{ loop: true }}
         plugins={[
           Autoplay({
             delay: 5000,
@@ -35,6 +34,11 @@ const ProductCarousel = ({
           }),
         ]}
       >
+        <div className="flex items-center justify-between">
+          <Heading icon={icon} title={title} />
+          <CarouselPrevious />
+          <CarouselNext />
+        </div>
         <CarouselContent>
           {data.map((product) => (
             <CarouselItem key={product.id} className="md:basis-1/4 basis-1/2">
@@ -42,8 +46,6 @@ const ProductCarousel = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
       </Carousel>
     </>
   );

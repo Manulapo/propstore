@@ -20,7 +20,7 @@ const HomePage = async () => {
   const harryPotterProducts = await getProductsByCategory("Harry Potter");
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="md:overflow-x-visible overflow-x-hidden">
       <NotifyBar />
       <Hero />
       <div className="mt-8 mb-12">
