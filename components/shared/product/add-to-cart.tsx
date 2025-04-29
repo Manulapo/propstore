@@ -30,7 +30,7 @@ const AddToCart = ({ item, cart }: { item: CartItem, cart?: Cart }) => {
             // handle success add to cart
             toast({
                 description: `${res.message}`,
-                action: (<ToastAction className="bg-primary text-white hover:bg-gray-800" altText="GoToCart" onClick={() => router.push('/cart')}> Go to cart</ToastAction>)
+                action: (<ToastAction className="bg-main rounded-full text-secondary hover:bg-main-hover border-none" altText="GoToCart" onClick={() => router.push('/cart')}> Go to cart</ToastAction>)
             });
         });
     }

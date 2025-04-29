@@ -8,8 +8,7 @@ export const Hero = async () => {
         <div className="md:col-span-8 mb-10 items-center">
           <div className="flex flex-col gap-4 items-start justify-center">
             <div className="flex items-center gap-3">
-              <AppLogo />
-              <h1 className="h3-bold">PropStore</h1>
+              <AppLogo hasLogoName={true}/>
             </div>
           </div>
           <p className="md:text-8xl text-4xl font-light text-gray-500 leading-1">

@@ -22,9 +22,9 @@ export const metadata: Metadata = {
       : "http://localhost:3000"
   ),
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/icon/apple-icon.png",
+    icon: "/favicon-store.ico",
+    shortcut: "/favicon-store.ico",
+    apple: "/favicon-store.ico",
   },
 };
 

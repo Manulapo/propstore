@@ -93,9 +93,11 @@ const ReviewForm = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={handleOpenForm} variant="default">
-        Leave a review
-      </Button>
+      <div className="flex justify-end w-full">
+        <Button onClick={handleOpenForm} variant="default">
+          Leave a review
+        </Button>
+      </div>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
           <form method="POST" onSubmit={form.handleSubmit(onsubmit)}>
