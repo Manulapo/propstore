@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
@@ -12,12 +12,17 @@ import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import ThemeModeToggle from "./theme-mode-toggle";
 import UserButton from "./user-button";
+import { auth } from "@/auth";
 
 const Menu = async () => {
-  const cart = await getMyCart();
+  const session = await auth();
   let cartItemCount = 0;
-  if(cart && cart.items.length > 0) {
-    cartItemCount = cart.items.reduce((acc, item) => acc + item.qty, 0);
+  if (session) {
+    const cart = await getMyCart();
+    cartItemCount =
+      cart && cart.items.length > 0
+        ? cart.items.reduce((acc, item) => acc + item.qty, 0)
+        : 0;
   }
 
   return (
@@ -26,7 +31,12 @@ const Menu = async () => {
         <ThemeModeToggle />
         <Button variant="ghost" asChild className="relative">
           <Link href="/cart">
-            <ShoppingCart /> Cart {cartItemCount > 0 && <span className="ml-1 rounded-full bg-main w-5 h-5 text-secondary justify-center flex text-xs items-center absolute top-0 right-0 border-none">{cartItemCount}</span>}
+            <ShoppingCart /> Cart{" "}
+            {cartItemCount > 0 && (
+              <span className="ml-1 rounded-full bg-main w-5 h-5 text-secondary justify-center flex text-xs items-center absolute top-0 right-0 border-none">
+                {cartItemCount}
+              </span>
+            )}
           </Link>
         </Button>
         <UserButton />
