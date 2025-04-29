@@ -25,6 +25,7 @@ const Footer = () => {
         >
           Terms of Service
         </Link>
+        <span className="mx-2">|</span>
         <Link
           href="/terms-of-use"
           className="text-sm text-muted-foreground hover:underline"
