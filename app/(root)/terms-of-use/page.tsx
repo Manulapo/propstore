@@ -38,6 +38,9 @@ const TermsOfUse = () => {
       <p className="mb-6">
         All design assets, code, logos, and illustrations on this site are the
         intellectual property of <em>Manuel La Porta</em> unless otherwise noted.
+        <br />
+        <em>Design and code inspiration: Traversy Media (Brad Traversy)</em>
+        <br />
         You may not reproduce, distribute, or create derivative works without
         written permission.
       </p>

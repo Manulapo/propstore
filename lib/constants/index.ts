@@ -13,12 +13,6 @@ export const LATEST_PRODCUCT_LIMIT =
 export const CURRENCY_SYMBOL = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "€";
 export const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "EUR";
 
-// Default values for sign in form testing
-export const signInCredentialsDefaultValues = {
-  email: "admin@example.com",
-  password: "123456",
-};
-
 export const signUpDefaultValues = {
   name: "",
   email: "",

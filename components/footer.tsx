@@ -13,20 +13,20 @@ const Footer = () => {
       </div>
       <div className="flex items-center justify-center py-4">
         <Link
-          href="/privacy-policy"
+          href="/terms-of-use"
           className="text-sm text-muted-foreground hover:underline"
         >
           Privacy Policy
         </Link>
         <span className="mx-2">|</span>
         <Link
-          href="/"
+          href="/terms-of-use"
           className="text-sm text-muted-foreground hover:underline"
         >
           Terms of Service
         </Link>
         <Link
-          href="/"
+          href="/terms-of-use"
           className="text-sm text-muted-foreground hover:underline"
         >
           Contact Us

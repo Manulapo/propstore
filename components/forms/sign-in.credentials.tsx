@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { signInCredentialsDefaultValues } from "@/lib/constants";
 import { useActionState } from "react";
 import { signinUserWithCredentials } from "@/lib/actions/user.actions";
 import { useFormStatus } from "react-dom";
@@ -34,11 +33,11 @@ const SignInCredentialsForm = () => {
             <div className="space-y-6">
                 <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input id='email' name="email" type='email' placeholder='Email' autoComplete="email" required defaultValue={signInCredentialsDefaultValues.email} />
+                    <Input id='email' name="email" type='email' placeholder='Email' autoComplete="email" required />
                 </div>
                 <div>
                     <Label htmlFor="password">Password</Label>
-                    <Input id='password' name="password" type='password' placeholder='Password' autoComplete="password" required defaultValue={signInCredentialsDefaultValues.password} />
+                    <Input id='password' name="password" type='password' placeholder='Password' autoComplete="password" required />
                 </div>
                 <div>
                     <SignInButton />
