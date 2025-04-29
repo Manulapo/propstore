@@ -7,7 +7,7 @@ import Rating from "./ratings";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   return (
-    <Card className="overflow-hidden mx-3 pb-2">
+    <Card className="overflow-hidden my-3 pb-2">
       <CardHeader className="p-0 items-center">
         <Link href={`/product/${product.slug}`}>
           <Image
@@ -26,7 +26,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           href={`/product/${product.slug}`}
           className="text-sm underline-offset-4 hover:underline"
         >
-          <h3 className="font-semibold truncate text-wrap">{product.name}</h3>
+          <h3 className="font-semibold line-clamp-1 text-wrap">{product.name}</h3>
           <p className="text-muted-foreground">{product.category}</p>
         </Link>
         <div className="flex justify-between items-center mt-1 w-full">

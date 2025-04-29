@@ -13,9 +13,9 @@ export const Hero = async () => {
             </div>
           </div>
           <p className="md:text-8xl text-4xl font-light text-gray-500 leading-1">
-            Your one-stop to revive the
-            <span className="text-primary font-semibold"> magic</span> of{" "}
-            <span className="font-semibold text-main">cinema</span>
+            Where the <span className="text-primary font-semibold">magic</span>{" "}
+            of <span className="font-semibold text-main">cinema</span> lives
+            again.
           </p>
         </div>
         <div className="md:col-span-4">

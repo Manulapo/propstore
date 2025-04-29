@@ -1,6 +1,6 @@
 {
-    "monthPromo": {
-        "title": "Weekly Specials",
+    "starWarsPromo": {
+        "title": "The Deal Strikes Back!",
         "description": "Celebrate the legacy of the Star Wars Republic with epic lore and nerdy passion! This month, enjoy an exclusive discount on all Star Wars merchandise. Embrace your inner rebel and upgrade your collection with savings that are out of this galaxy.",
         "image": "/images/star_wars_promo.png",
         "link": "/search?category=Star Wars",

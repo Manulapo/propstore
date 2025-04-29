@@ -10,8 +10,8 @@ export const SERVER_URL =
     : "http://localhost:3000";
 export const LATEST_PRODCUCT_LIMIT =
   Number(process.env.NEXT_PUBLIC_LATEST_PRODUCT_LIMIT) || 4;
-export const CURRENCY_SYMBOL = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
-export const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "USD";
+export const CURRENCY_SYMBOL = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "€";
+export const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "EUR";
 
 // Default values for sign in form testing
 export const signInCredentialsDefaultValues = {

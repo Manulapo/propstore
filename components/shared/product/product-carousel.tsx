@@ -25,7 +25,7 @@ const ProductCarousel = ({
     <>
       <Heading icon={icon} title={title} />
       <Carousel
-        className="w-full mb-12 mt-4"
+        className="w-full my-12"
         opts={{ loop: false }}
         plugins={[
           Autoplay({

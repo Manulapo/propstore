@@ -4,6 +4,7 @@ import Hero from "@/components/shared/header/hero";
 import BannerCarousel from "@/components/shared/product/banner-carousel";
 import ProductCarousel from "@/components/shared/product/product-carousel";
 import ProductList from "@/components/shared/product/product-list";
+import StaticBanner from "@/components/ui/static-banner";
 import ViewAllProducts from "@/components/view-all-product";
 import {
   getFeaturedProducts,
@@ -24,10 +25,19 @@ const HomePage = async () => {
       {featuredProducts.length > 0 && (
         <BannerCarousel data={featuredProducts} />
       )}
-      <ProductCarousel data={latestProducts} title="New arrival" icon={<FilmIcon />} />
+      <BannerCarousel
+        data={promoObject.banners}
+        isStatic={true}
+        className="hidden md:block"
+      />
+      <ProductCarousel
+        data={latestProducts}
+        title="New arrival"
+        icon={<FilmIcon />}
+      />
       <ViewAllProducts />
       <DealCountDown
-        promoObject={promoObject.monthPromo}
+        promoObject={promoObject.starWarsPromo}
         orientation="right"
       />
       <ProductList
@@ -36,8 +46,9 @@ const HomePage = async () => {
         limit={4}
         icon={<StarsIcon />}
       />
-
-      <IconBoxes />
+      <div className="my-4">
+        <IconBoxes />
+      </div>
     </>
   );
 };
