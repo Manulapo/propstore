@@ -39,11 +39,6 @@ const BannerCarousel = ({ data }: { data: ProductType[] }) => {
                       className="w-full h-auto rounded-md"
                       sizes="100vw"
                     />
-                    <div className="absolute inset-0 flex items-end justify-end">
-                      <h2 className="bg-gray-900 bg-opacity-50 text-2xl font-bold px-2 text-white">
-                        {product.name}
-                      </h2>
-                    </div>
                   </div>
                 </Link>
               </CarouselItem>

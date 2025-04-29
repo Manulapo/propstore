@@ -20,7 +20,7 @@ const ProductList = ({
     <div className="my-10">
       <Heading title={title} icon={icon} />
       {data.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {limitedData.map((product: ProductType) => (
             <ProductCard product={product} key={product.slug} />
           ))}

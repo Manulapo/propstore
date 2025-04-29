@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 import { cn, parseDate } from "@/lib/utils";
 
-// todo: make a json file with dates, images and text for the promo
 
 const calculateTimeRemaining = (targetDate: Date) => {
   const currentTime = new Date();
@@ -57,7 +56,7 @@ const DealCountDown = ({
 
   const promoImage = useMemo(
     () => (
-      <div className="flex justify-center">
+      <div className="flex justify-center my-3">
         <Image
           src={image}
           alt={title}
@@ -100,8 +99,8 @@ const DealCountDown = ({
 
   if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
     return (
-      <section className="grid grid-cols-2 md:grid-cols-2 my-20">
-        <div className="saturate-0">{promoImage}</div>
+      <section className="grid gap-6 grid-cols-2 md:grid-cols-2 my-20">
+        <div className="saturate-0 my-2">{promoImage}</div>
         <div className="flex flex-col gap-2 justify-center">
           <h3 className="text-3xl font-bold text-destructive">
             The deal has expired

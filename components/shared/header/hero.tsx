@@ -3,7 +3,7 @@ import AppLogo from "../app-logo";
 
 export const Hero = async () => {
   return (
-    <div className="bg-base-200 my-20 px-2">
+    <div className="bg-base-200 md:my-20 mt-5 px-2">
       <div className="md:grid grid-cols-12 gap-4 justify-center items-center">
         <div className="md:col-span-8 mb-10 items-center">
           <div className="flex flex-col gap-4 items-start justify-center">
