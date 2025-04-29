@@ -21,11 +21,6 @@ export const metadata: Metadata = {
       ? process.env.NEXT_PUBLIC_SERVER_URL!
       : "http://localhost:3000"
   ),
-  icons: {
-    icon: "/favicon-store.ico",
-    shortcut: "/favicon-store.ico",
-    apple: "/favicon-store.ico",
-  },
 };
 
 export default function RootLayout({
