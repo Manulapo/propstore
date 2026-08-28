@@ -1,4 +1,4 @@
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ProductPrice from "./product-price";
@@ -10,13 +10,13 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     <Card className="overflow-hidden my-3 pb-2">
       <CardHeader className="p-0 items-center">
         <Link href={`/product/${product.slug}`}>
-          <Image
-            priority={true}
+          <LazyImage
             src={product.images![0]}
             alt={product.name}
             className="aspect-square object-contain rounded p-3"
             height={250}
             width={250}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 250px"
           />
         </Link>
       </CardHeader>

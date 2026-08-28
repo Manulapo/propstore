@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { ProductType } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 
 const BannerCarousel = ({ data }: { data: ProductType[] }) => {
@@ -31,7 +31,7 @@ const BannerCarousel = ({ data }: { data: ProductType[] }) => {
               <CarouselItem key={product.id}>
                 <Link href={`/product/${product.slug}`}>
                   <div className="relative mx-auto">
-                    <Image
+                    <LazyImage
                       src={product?.banner}
                       alt={product.name}
                       width={0}

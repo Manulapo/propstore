@@ -8,7 +8,7 @@ import { insertProductSchema, updateProductSchema } from "@/lib/validators";
 import { ProductType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import { useRouter } from "next/navigation";
 import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
 import slugify from "slugify";
@@ -262,7 +262,7 @@ const ProductForm = ({
                   <CardContent className="space-y-2 mt-2 min-h-48">
                     <div className="flex-start space-x-2">
                       {images.map((image: string) => (
-                        <Image
+                        <LazyImage
                           key={image}
                           src={image}
                           alt="product image"
@@ -315,7 +315,7 @@ const ProductForm = ({
                 )}
               />
               {isFeatured && banner && (
-                <Image
+                <LazyImage
                   src={banner}
                   alt="product image"
                   width={1920}

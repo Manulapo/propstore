@@ -19,7 +19,7 @@ import {
 } from "@/lib/actions/order-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Order } from "@/types";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -187,7 +187,7 @@ const OrderDetailTable = ({
                           href={`/product/${item.slug}`}
                           className="flex items-center"
                         >
-                          <Image
+                          <LazyImage
                             src={item.image}
                             alt={item.name}
                             width={50}

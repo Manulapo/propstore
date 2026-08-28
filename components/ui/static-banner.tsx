@@ -1,4 +1,4 @@
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 
 const StaticBanner = ({
@@ -11,12 +11,10 @@ const StaticBanner = ({
   return (
     <>
       <Link href={linkTo ?? "/"}>
-        <Image
+        <LazyImage
           src={bannerImage}
           alt="Static Banner"
           className="w-full h-auto object-cover rounded-lg"
-          objectFit="cover"
-          objectPosition="center"
           width={1000}
           height={500}
         />

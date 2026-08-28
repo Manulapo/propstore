@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import { useEffect, useState, useMemo } from "react";
 import { cn, parseDate } from "@/lib/utils";
 
@@ -57,7 +57,7 @@ const DealCountDown = ({
   const promoImage = useMemo(
     () => (
       <div className="flex justify-center my-3">
-        <Image
+        <LazyImage
           src={image}
           alt={title}
           width={500}

@@ -16,7 +16,7 @@ import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Cart } from "@/types";
 import { ArrowRight, Loader, Minus, Plus } from "lucide-react";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -63,7 +63,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                         href={`/product/${item.slug}`}
                         className="flex items-center"
                       >
-                        <Image
+                        <LazyImage
                           src={item.image}
                           width={100}
                           height={100}

@@ -15,7 +15,7 @@ import { getMyCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { ShippingAddress } from "@/types";
 import { Metadata } from "next";
-import Image from "next/image";
+import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PlaceOrderForm from "./place-order-form";
@@ -101,7 +101,7 @@ const PlaceOrderPage = async () => {
                           href={`/product/${item.slug}`}
                           className="flex items-center"
                         >
-                          <Image
+                          <LazyImage
                             src={item.image}
                             alt={item.name}
                             width={50}
