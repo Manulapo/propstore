@@ -109,7 +109,7 @@ export const formatDate = (dateString: Date) => {
     localOption,
     dateOptions
   );
-  const formattedTime: string = new Date(dateString).toLocaleDateString(
+  const formattedTime: string = new Date(dateString).toLocaleTimeString(
     localOption,
     timeOptions
   );

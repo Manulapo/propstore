@@ -5,9 +5,7 @@ export const APP_DESCRIPTION =
   process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
   "Modern e-commerce for your favorite movies and TV shows.";
 export const SERVER_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_SERVER_URL
-    : "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
 export const LATEST_PRODCUCT_LIMIT =
   Number(process.env.NEXT_PUBLIC_LATEST_PRODUCT_LIMIT) || 4;
 export const CURRENCY_SYMBOL = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "€";

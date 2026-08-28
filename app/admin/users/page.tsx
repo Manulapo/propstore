@@ -35,7 +35,7 @@ const AdminUserPage = async (props: {
           {searchText && (
             <div>
               Filtered by <i>&quot;{searchText}&quot;</i>
-              <Link href="/admin/orders">
+              <Link href="/admin/users">
                 <Button variant="outline" size="sm" className="ml-5">
                   Clear Filter
                 </Button>

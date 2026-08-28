@@ -5,10 +5,7 @@ import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 import { Provider } from "@radix-ui/react-toast";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Inter } from "next/font/google";
 import { AppProviders } from "./providers"; // 👈 import the wrapper
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -17,9 +14,7 @@ export const metadata: Metadata = {
   },
   description: APP_DESCRIPTION,
   metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_SERVER_URL!
-      : "http://localhost:3000"
+    process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000"
   ),
 };
 
@@ -30,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

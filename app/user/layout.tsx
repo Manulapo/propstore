@@ -3,6 +3,8 @@ import Menu from "@/components/shared/header/menu";
 import Link from "next/link";
 import MainNav from "./main-nav";
 
+export const dynamic = "force-dynamic";
+
 export default function UserLayout({
   children,
 }: Readonly<{

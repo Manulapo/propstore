@@ -1,33 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { updateOrderToPaid } from "@/lib/actions/order-actions";
+import { prisma } from "@/db/prisma";
+import { finalizeOrderPayment } from "@/lib/order-payment";
 
 export async function POST(req: NextRequest) {
-  // we are using Stripe to handle webhooks, so we need to verify the webhook signature
-  // and then update the order to paid in our database
-  const event = await Stripe.webhooks.constructEvent(
-    await req.text(), // the raw body of the request
-    req.headers.get("Stripe-Signature") as string, // the signature from Stripe
-    process.env.STRIPE_WEBHOOK_SECRET as string // the webhook secret from Stripe
-  );
-
-  // Check if the event is a charge.succeeded event meaning the payment was successful
-  // and update the order to paid in our database
-  if (event.type === "charge.succeeded") {
-    const { object } = event.data;
-    // update the order status
-    await updateOrderToPaid({
-      orderId: object.metadata.orderId,
-      paymentResult: {
-        id: object.id,
-        status: "COMPLETED",
-        email_address: object.billing_details.email!,
-        price_paid: (object.amount / 100).toFixed(), // convert to dollars because Stripe returns in cents
-      },
-    });
-
-    return NextResponse.json({ message: "updateOrderToPaid was successful" });
+  const signature = req.headers.get("Stripe-Signature");
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!signature || !secret) {
+    return NextResponse.json(
+      { error: "Webhook is not configured" },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ message: "event is not charge.succeded" });
+  let event: Stripe.Event;
+  try {
+    event = Stripe.webhooks.constructEvent(await req.text(), signature, secret);
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid webhook signature" },
+      { status: 400 }
+    );
+  }
+
+  if (event.type !== "charge.succeeded") {
+    return NextResponse.json({ received: true });
+  }
+
+  const charge = event.data.object as Stripe.Charge;
+  const orderId = charge.metadata?.orderId;
+  if (!orderId) {
+    return NextResponse.json({ error: "Missing order metadata" }, { status: 400 });
+  }
+
+  const order = await prisma.order.findUnique({ where: { id: orderId } });
+  if (!order || order.paymentMethod !== "Stripe") {
+    return NextResponse.json({ error: "Invalid order" }, { status: 400 });
+  }
+
+  const expectedAmount = Math.round(Number(order.totalPrice) * 100);
+  const expectedCurrency = (
+    process.env.NEXT_PUBLIC_CURRENCY_CODE || "EUR"
+  ).toLowerCase();
+  if (charge.amount !== expectedAmount || charge.currency !== expectedCurrency) {
+    return NextResponse.json(
+      { error: "Payment amount does not match order" },
+      { status: 400 }
+    );
+  }
+
+  await finalizeOrderPayment({
+    orderId,
+    paymentResult: {
+      id: charge.id,
+      status: "COMPLETED",
+      email_address: charge.billing_details?.email || "",
+      price_paid: (charge.amount / 100).toFixed(2),
+    },
+  });
+
+  return NextResponse.json({ message: "Payment processed" });
 }

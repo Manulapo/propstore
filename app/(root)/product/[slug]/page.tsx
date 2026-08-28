@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import ReviewList from "./review-list";
 import Rating from "@/components/shared/product/ratings";
 
+export const dynamic = "force-dynamic";
+
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {

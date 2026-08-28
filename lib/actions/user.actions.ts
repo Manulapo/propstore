@@ -1,9 +1,8 @@
 "use server";
-import { auth, signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
 import { ShippingAddress } from "@/types";
 import { hashSync } from "bcrypt-ts-edge";
-import { signOut } from "next-auth/react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { z } from "zod";
 import { formatErrors } from "../utils";
@@ -12,6 +11,7 @@ import {
   ShippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
+  updateProfileSchema,
   updateUserSchema,
 } from "../validators";
 import { PAGE_SIZE } from "../constants";
@@ -19,6 +19,8 @@ import { revalidatePath } from "next/cache";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
 import { getMyCart } from "./cart.actions";
+import { requireAdminSession, requireUserSession } from "../auth-guard";
+import { USER_ROLES } from "../constants";
 
 export async function signUpUser(prevState: unknown, formData: FormData) {
   try {
@@ -97,14 +99,15 @@ export async function signinUserWithCredentials(
 export const signOutUser = async () => {
   // get current users cart and delete it so it does not persist to next user
   const currentCart = await getMyCart();
-  await prisma.cart.delete({ where: { id: currentCart?.id } });
+  if (currentCart) {
+    await prisma.cart.delete({ where: { id: currentCart.id } });
+  }
   await signOut({ redirect: true });
 };
 
 // get user by id
 export async function getUserById(userId: string): Promise<{
   email: string;
-  password: string | null;
   id: string;
   createdAt: Date;
   paymentMethod: string | null;
@@ -115,8 +118,25 @@ export async function getUserById(userId: string): Promise<{
   role: string;
   address: JsonValue | null;
 }> {
-  const user = await prisma.user.findFirst({
+  const session = await requireUserSession();
+  if (session.user.id !== userId && session.user.role !== "admin") {
+    throw new Error("Not authorized");
+  }
+
+  const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerified: true,
+      image: true,
+      createdAt: true,
+      updatedAt: true,
+      role: true,
+      address: true,
+      paymentMethod: true,
+    },
   });
 
   if (!user || !user.email || !user.name) {
@@ -131,7 +151,7 @@ export async function getUserById(userId: string): Promise<{
 // update the users address
 export async function updateUserAddress(data: ShippingAddress) {
   try {
-    const session = await auth();
+    const session = await requireUserSession();
     const currentUser = await prisma.user.findUnique({
       where: { id: session?.user?.id },
     });
@@ -157,7 +177,7 @@ export async function updateUserPaymentMethod(
   data: z.infer<typeof PaymentMethodSchema>
 ) {
   try {
-    const session = await auth();
+    const session = await requireUserSession();
     const currentUser = await prisma.user.findFirst({
       where: { id: session?.user?.id },
     });
@@ -181,7 +201,7 @@ export async function updateUserPaymentMethod(
 // update user profile
 export async function updateProfile(user: { name: string; email: string }) {
   try {
-    const session = await auth();
+    const session = await requireUserSession();
     const currentUser = await prisma.user.findFirst({
       where: { id: session?.user?.id },
     });
@@ -190,11 +210,13 @@ export async function updateProfile(user: { name: string; email: string }) {
       throw new Error("User not found");
     }
 
+    const profile = updateProfileSchema.parse(user);
+
     await prisma.user.update({
       where: { id: currentUser.id },
       data: {
-        name: user.name,
-        email: user.email,
+        name: profile.name,
+        email: profile.email,
       },
     });
 
@@ -214,6 +236,12 @@ export async function getAllUsers({
   page: number;
   query: string;
 }) {
+  await requireAdminSession();
+
+  const safeLimit = Number.isFinite(limit)
+    ? Math.min(Math.max(Math.floor(limit), 1), 100)
+    : PAGE_SIZE;
+  const safePage = Number.isFinite(page) ? Math.max(Math.floor(page), 1) : 1;
   const queryFilter: Prisma.UserWhereInput =
     query && query !== "all"
       ? {
@@ -225,22 +253,39 @@ export async function getAllUsers({
     where: {
       ...queryFilter,
     },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      createdAt: true,
+      updatedAt: true,
+      role: true,
+    },
     orderBy: { createdAt: "desc" },
-    take: limit,
-    skip: (page - 1) * limit, // page - 1 because page is 1 indexed and skip is 0 indexed
+    take: safeLimit,
+    skip: (safePage - 1) * safeLimit,
   });
 
-  const dataCount = await prisma.user.count();
+  const dataCount = await prisma.user.count({ where: queryFilter });
 
   return {
     data,
-    totalPages: Math.ceil(dataCount / limit),
+    totalPages: Math.ceil(dataCount / safeLimit),
   };
 }
 
 // delete user by id
 export async function deleteUserById(id: string) {
   try {
+    const session = await requireAdminSession();
+    if (session.user.id === id) throw new Error("You cannot delete yourself");
+
+    const historicalOrders = await prisma.order.count({ where: { userId: id } });
+    if (historicalOrders > 0) {
+      throw new Error("Users with order history cannot be deleted");
+    }
+
     await prisma.user.delete({
       where: { id },
     });
@@ -255,11 +300,20 @@ export async function deleteUserById(id: string) {
 // update user
 export async function updateUser(user: z.infer<typeof updateUserSchema>) {
   try {
+    const session = await requireAdminSession();
+    if (session.user.id === user.id && user.role !== "admin") {
+      throw new Error("You cannot remove your own admin access");
+    }
+
+    const validatedUser = updateUserSchema.parse(user);
+    if (!USER_ROLES.includes(validatedUser.role)) {
+      throw new Error("Invalid user role");
+    }
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: validatedUser.id },
       data: {
-        name: user.name,
-        role: user.role,
+        name: validatedUser.name,
+        role: validatedUser.role,
       },
     });
     revalidatePath("/admin/users/");

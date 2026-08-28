@@ -16,7 +16,11 @@ import {
   formatErrors,
   roundNumber,
 } from "../utils";
-import { CartItemSchema, InsertCartSchema } from "../validators";
+import {
+  CartItemInputSchema,
+  CartItemSchema,
+  InsertCartSchema,
+} from "../validators";
 
 // calculate cart prices
 export const calcPrice = async (items: CartItem[]) => {
@@ -61,16 +65,30 @@ export async function addItemToCart(
     // 3. Get the user's existing cart (if any).
     const cart = await getMyCart();
 
-    // 4. Validate and parse the incoming cart item data.
-    const item = CartItemSchema.parse(data);
+    // Only accept the product ID and quantity from the client. Rebuild all
+    // other fields from the database so prices and display data cannot be
+    // tampered with.
+    const itemInput = CartItemInputSchema.parse({
+      productId: data.productId,
+      qty: data.qty,
+    });
 
     // 5. Retrieve the product from the database.
     const product = await prisma.product.findFirst({
-      where: { id: item.productId },
+      where: { id: itemInput.productId },
     });
     if (!product) {
       throw new Error("Product not found");
     }
+
+    const item = CartItemSchema.parse({
+      productId: product.id,
+      name: product.name,
+      slug: product.slug,
+      qty: itemInput.qty,
+      image: product.images[0],
+      price: product.price.toString(),
+    });
 
     // 6. If no cart exists, create a new one.
     if (!cart) {
@@ -101,11 +119,11 @@ export async function addItemToCart(
     );
 
     if (existingItem) {
-      // Ensure adding one more doesn't exceed stock.
-      if (product.stock < existingItem.qty + 1) {
+      // Ensure the resulting quantity doesn't exceed stock.
+      if (product.stock < existingItem.qty + item.qty) {
         throw new Error("Not enough stock");
       }
-      existingItem.qty += 1;
+      existingItem.qty += item.qty;
     } else {
       // For a new item, ensure there's enough stock.
       if (product.stock < item.qty) {
@@ -143,10 +161,10 @@ export async function addItemToCart(
 
 // Get my cart should return the cart of the user or the session cart
 export const getMyCart = async () => {
-  // check for cart cookie
-  const sessionCartId = (await cookies()).get("sessionCartId")?.value; // get cookie value
+  // Check for a guest cart cookie. Authenticated carts are resolved by user ID.
+  const sessionCartId = (await cookies()).get("sessionCartId")?.value;
 
-  if (!sessionCartId) return undefined; // if no cart cookie, return undefined
+  if (!sessionCartId) return undefined;
 
   // get session and user id
   const session = await auth();
@@ -173,20 +191,14 @@ export const getMyCart = async () => {
 // remove item from cart
 export const removeItemFromCart = async (productId: string) => {
   try {
-    // Check for cart cookies
-    const sessionCartId = (await cookies()).get("sessionCartId")?.value;
-    if (!sessionCartId) throw new Error("Session cart ID not found");
-
     // Get product from database
     const product = await prisma.product.findFirst({
       where: { id: productId },
     });
     if (!product) throw new Error("Product not found");
 
-    // Get cart from database
-    const cart = await prisma.cart.findFirst({
-      where: { sessionCartId },
-    });
+    // Resolve the authenticated user's cart or the guest session cart.
+    const cart = await getMyCart();
     if (!cart) throw new Error("Cart not found");
 
     // Get cart items
@@ -197,18 +209,21 @@ export const removeItemFromCart = async (productId: string) => {
     if (!existingItem) throw new Error("Item not found in cart");
 
     // Update item quantity or remove item
+    let updatedItems: CartItem[];
     if (existingItem.qty === 1) {
-      cart.items = items.filter((item) => item.productId !== productId);
+      updatedItems = items.filter((item) => item.productId !== productId);
     } else {
-      existingItem.qty -= 1;
+      updatedItems = items.map((item) =>
+        item.productId === productId ? { ...item, qty: item.qty - 1 } : item
+      );
     }
 
     // Update cart in databases
-    const updatedPrices = await calcPrice(cart.items as CartItem[]);
+    const updatedPrices = await calcPrice(updatedItems);
     await prisma.cart.update({
       where: { id: cart.id },
       data: {
-        items: cart.items as Prisma.CartUpdateitemsInput[],
+        items: updatedItems as Prisma.CartUpdateitemsInput[],
         ...updatedPrices,
       },
     });

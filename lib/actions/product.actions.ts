@@ -7,15 +7,16 @@ import { z } from "zod";
 import { LATEST_PRODCUCT_LIMIT, PAGE_SIZE } from "../constants";
 import { convertToJSObject, formatErrors, shuffleArray } from "../utils";
 import { insertProductSchema, updateProductSchema } from "../validators";
+import { requireAdminSession } from "../auth-guard";
 
 export async function getLatestProducts(
   limit: number = LATEST_PRODCUCT_LIMIT,
   shuffle = false
 ) {
   try {
-    const products = await prisma.product.findMany({
+      const products = await prisma.product.findMany({
       take: limit,
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return shuffle
@@ -42,6 +43,7 @@ export async function getProductBySlug(slug: string) {
 
 export const getProductById = async (productId: string) => {
   try {
+    await requireAdminSession();
     const product = await prisma.product.findFirst({
       where: { id: productId },
     });
@@ -73,6 +75,16 @@ export async function getAllProducts({
   rating?: string;
   shuffle?: boolean;
 }) {
+  const safePage = Number.isFinite(Number(page))
+    ? Math.max(Math.floor(Number(page)), 1)
+    : 1;
+  const safeLimit =
+    limit == null
+      ? null
+      : Number.isFinite(Number(limit))
+        ? Math.min(Math.max(Math.floor(Number(limit)), 1), 100)
+        : PAGE_SIZE;
+
   // Query filter
   const queryFilter: Prisma.ProductWhereInput =
     query && query !== "all"
@@ -87,22 +99,31 @@ export async function getAllProducts({
   // Category filter
   const categoryFilter = category && category !== "all" ? { category } : {};
   // Sort filter
+  const priceParts = price && price !== "all" ? price.split("-") : [];
+  const minPrice = Number(priceParts[0]);
+  const maxPrice = Number(priceParts[1]);
   const priceFilter: Prisma.ProductWhereInput =
-    price && price !== "all"
+    priceParts.length === 2 &&
+    Number.isFinite(minPrice) &&
+    Number.isFinite(maxPrice) &&
+    minPrice <= maxPrice
       ? {
           price: {
-            gte: Number(price.split("-")[0]), //greater than or equal to the first value
-            lte: Number(price.split("-")[1]), //less than or equal to the second value
-          } as Prisma.IntFilter,
+            gte: minPrice,
+            lte: maxPrice,
+          },
         }
       : {};
   // Rating filter
+  const ratingValue = Number(rating);
   const ratingFilter: Prisma.ProductWhereInput =
-    rating && rating !== "all"
+    rating &&
+    rating !== "all" &&
+    Number.isFinite(ratingValue)
       ? {
           rating: {
-            gte: Number(rating), //greater than or equal to the value
-          } as Prisma.IntFilter,
+            gte: ratingValue,
+          },
         }
       : {};
 
@@ -121,38 +142,49 @@ export async function getAllProducts({
     }
   };
 
+  const where: Prisma.ProductWhereInput = {
+    ...queryFilter,
+    ...categoryFilter,
+    ...priceFilter,
+    ...ratingFilter,
+  };
+
   const data = await prisma.product.findMany({
-    where: {
-      ...queryFilter,
-      ...categoryFilter,
-      ...priceFilter,
-      ...ratingFilter,
-    },
+    where,
     orderBy: sortFilter(),
-    skip: limit ? (Number(page) - 1) * limit : 0,
-    take: limit ? limit : undefined,
+    skip: safeLimit ? (safePage - 1) * safeLimit : 0,
+    take: safeLimit ?? undefined,
   });
 
-  const dataCount = await prisma.product.count();
+  const dataCount = await prisma.product.count({ where });
 
   return {
     data: shuffle
       ? shuffleArray(convertToJSObject(data))
       : convertToJSObject(data),
-    totalPage: limit ? Math.ceil(dataCount / limit) : 1,
-    currentPage: page,
+    totalPage: safeLimit ? Math.ceil(dataCount / safeLimit) : 1,
+    currentPage: safePage,
   };
 }
 
 // delete a product by id
 export const deleteProduct = async (id: string) => {
   try {
+    await requireAdminSession();
+
     const productExists = await prisma.product.findFirst({
       where: { id },
     });
 
     if (!productExists) {
       throw new Error("Product not found");
+    }
+
+    const historicalItems = await prisma.orderItem.count({
+      where: { productId: id },
+    });
+    if (historicalItems > 0) {
+      throw new Error("Products with order history cannot be deleted");
     }
 
     await prisma.product.delete({
@@ -177,6 +209,8 @@ export const deleteProduct = async (id: string) => {
 // create a product
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
+    await requireAdminSession();
+
     // validate the data using zod schema
     const product = insertProductSchema.parse(data);
 
@@ -199,6 +233,8 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
 // update a product
 export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
   try {
+    await requireAdminSession();
+
     // validate the data using zod schema
     const product = updateProductSchema.parse(data);
     const productExists = await prisma.product.findFirst({
@@ -211,7 +247,18 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
 
     await prisma.product.update({
       where: { id: product.id },
-      data: product,
+      data: {
+        name: product.name,
+        slug: product.slug,
+        brand: product.brand,
+        stock: product.stock,
+        images: product.images,
+        isFeatured: product.isFeatured,
+        banner: product.banner,
+        category: product.category,
+        description: product.description,
+        price: product.price,
+      },
     });
 
     revalidatePath("/admin/products");

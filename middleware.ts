@@ -6,7 +6,6 @@ const protectedPaths = [
   /\/shipping-address/,
   /\/payment-method/,
   /\/place-order/,
-  /\/profile-page/,
   /\/user\/(.*)/,
   /\/order\/(.*)/,
   /\/admin/,
@@ -48,13 +47,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/shipping-address",
-    "/payment-method",
-    "/place-order",
-    "/profile-page",
-    "/user/:path*",
-    "/order/:path*",
-    "/admin/:path*",
-  ],
+  // Run on application pages so guest carts receive a sessionCartId before
+  // the first add-to-cart server action. APIs and Next internals are excluded.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

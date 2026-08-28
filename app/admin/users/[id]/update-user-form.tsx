@@ -54,6 +54,7 @@ const UpdateUserForm = ({
           description: res.message,
           variant: "destructive",
         });
+        return;
       }
 
       toast({

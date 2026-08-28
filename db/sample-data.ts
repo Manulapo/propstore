@@ -1,5 +1,3 @@
-import { hashSync } from "bcrypt-ts-edge";
-
 export const uuids: string[] = [
   "147ec2d6-7eec-4b05-9597-5ee2a2985755",
   "52c44caf-0321-4f31-9924-df0b18b1abda",
@@ -44,13 +42,13 @@ const sampleData = {
     {
       name: "admin",
       email: "admin@example.com",
-      password: hashSync("123456", 10),
+      password: "",
       role: "admin", //token role
     },
     {
       name: "user",
       email: "user@example.com",
-      password: hashSync("123456", 10),
+      password: "",
       role: "user", //token role
     },
   ],

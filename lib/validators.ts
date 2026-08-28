@@ -54,9 +54,16 @@ export const CartItemSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
   name: z.string().min(3, "Name is required"),
   slug: z.string().min(3, "Slug is required"),
-  qty: z.number().int().nonnegative("Quantity must be a positive number"),
+  qty: z.number().int().positive("Quantity must be a positive number"),
   image: z.string().min(1, "Image is required"),
   price: currency,
+});
+
+// Only the product ID and quantity are accepted from the client. Product
+// details and prices are rebuilt from the database on the server.
+export const CartItemInputSchema = z.object({
+  productId: z.string().uuid("Invalid product ID"),
+  qty: z.number().int().positive("Quantity must be a positive number"),
 });
 
 // Cart schema
@@ -114,7 +121,7 @@ export const InsertOrderItemSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   name: z.string().min(1, "Name is required"),
   image: z.string().min(1, "Image is required"),
-  qty: z.number().int().nonnegative("Quantity must be a positive number"),
+  qty: z.number().int().positive("Quantity must be a positive number"),
   price: currency,
 });
 
@@ -129,7 +136,7 @@ export const paymentResultSchema = z.object({
 // Schema for updating the user profile
 export const updateProfileSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
-  email: z.string().min(3, "Email must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
 });
 
 // Schema to update users

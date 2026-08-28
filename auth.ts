@@ -38,7 +38,7 @@ export const config = {
         });
 
         // If no user or no password, return null
-        if (!user || !user.password) return null;
+        if (!user || !user.password || !user.email) return null;
 
         // Compare hashed password
         const isValidPassword = compareSync(
@@ -96,7 +96,7 @@ export const config = {
 
           if (sessionCartId) {
             const sessionCart = await prisma.cart.findFirst({
-              where: { sessionCartId },
+              where: { sessionCartId, userId: null },
             });
 
             if (sessionCart) {
@@ -113,6 +113,18 @@ export const config = {
             }
           }
         }
+      }
+
+      // Roles can change while a JWT is still valid. Refresh the mutable
+      // authorization fields on subsequent session checks.
+      if (!user && token.sub) {
+        const currentUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { role: true, name: true },
+        });
+        if (!currentUser) return {};
+        token.role = currentUser.role;
+        token.name = currentUser.name || token.name;
       }
 
       // handle session updates for the name field

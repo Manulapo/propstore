@@ -1,6 +1,5 @@
-import { auth } from "@/auth";
+import { requireAdminSession } from "@/lib/auth-guard";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -15,8 +14,7 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
       // This code runs on your server before upload
-      const session = await auth();
-      if (!session) throw new UploadThingError("Unauthorized");
+      const session = await requireAdminSession();
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: session?.user?.id };

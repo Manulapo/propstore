@@ -4,6 +4,8 @@ import Link from "next/link";
 import AdminSearch from "./admin-search";
 import MainNav from "./main-nav";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({
   children,
 }: Readonly<{

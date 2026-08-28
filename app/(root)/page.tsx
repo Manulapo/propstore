@@ -14,6 +14,8 @@ import {
 import promoObject from "@/public/promo/promo.json";
 import { FilmIcon, StarsIcon } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const HomePage = async () => {
   const latestProducts = await getLatestProducts(8, true);
   const featuredProducts = await getFeaturedProducts(4);

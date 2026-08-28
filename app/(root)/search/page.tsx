@@ -7,6 +7,8 @@ import {
 } from "@/lib/actions/product.actions";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 const ratings = [1, 2, 3, 4, 5];
 const sortOrders = ["Newest", "Oldest", "Highest", "Lowest", "Rating"];
 const prices = [

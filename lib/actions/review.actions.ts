@@ -27,6 +27,15 @@ export async function creatUpdateReview(
 
     if (!product) throw new Error("Product not found");
 
+    const verifiedPurchase = await prisma.order.findFirst({
+      where: {
+        userId: session.user.id,
+        isPaid: true,
+        orderitems: { some: { productId: review.productId } },
+      },
+      select: { id: true },
+    });
+
     // check if the user has already reviewed the product
     const existingReview = await prisma.review.findFirst({
       where: {
@@ -45,11 +54,15 @@ export async function creatUpdateReview(
             title: review.title,
             rating: review.rating,
             description: review.description,
+            isVerifiedPurchase: Boolean(verifiedPurchase),
           },
         });
       } else {
         await tx.review.create({
-          data: review,
+          data: {
+            ...review,
+            isVerifiedPurchase: Boolean(verifiedPurchase),
+          },
         });
       }
 

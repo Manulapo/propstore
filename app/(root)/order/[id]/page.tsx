@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import { ShippingAddress } from "@/types";
 import OrderDetailTable from "./order-details-table";
 import { auth } from "@/auth";
+import { prisma } from "@/db/prisma";
 import Stripe from "stripe";
 import { CURRENCY_CODE } from "@/lib/constants";
+import { PaymentResult } from "@/types";
 
 export const metadata: Metadata = {
   title: "Order Detail",
@@ -26,14 +28,29 @@ const OrderDetailPage = async (props: { params: Promise<{ id: string }> }) => {
   // check if is not paid with stripe and is not already paid
   if (order.paymentMethod === "Stripe" && order.isPaid === false) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-    // create a payment intent with the order amount
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(Number(order.totalPrice) * 100), // convert to cents
-      currency: CURRENCY_CODE.toLowerCase(),
-      metadata: {
-        orderId: order.id,
-      },
-    });
+    const existingPayment = order.paymentResult as PaymentResult | null;
+    const paymentIntent = existingPayment?.id?.startsWith("pi_")
+      ? await stripe.paymentIntents.retrieve(existingPayment.id)
+      : await stripe.paymentIntents.create({
+          amount: Math.round(Number(order.totalPrice) * 100),
+          currency: CURRENCY_CODE.toLowerCase(),
+          metadata: { orderId: order.id },
+        });
+
+    if (!existingPayment?.id?.startsWith("pi_")) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paymentResult: {
+            id: paymentIntent.id,
+            status: paymentIntent.status,
+            email_address: "",
+            price_paid: order.totalPrice.toString(),
+          },
+        },
+      });
+    }
+
     // get the client secret from the payment intent
     client_secret = paymentIntent.client_secret;
   }
@@ -47,7 +64,6 @@ const OrderDetailPage = async (props: { params: Promise<{ id: string }> }) => {
         user: { name: order.user.name ?? "", email: order.user.email ?? "" },
       }}
       stripeClientSecret={client_secret ?? ""}
-      paypalClientId={process.env.PAYPAL_CLIENT_ID ?? "sb"}
       isAdmin={session?.user?.role === "admin" || false}
     />
   );

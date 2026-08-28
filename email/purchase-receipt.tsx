@@ -12,10 +12,10 @@ import {
     Tailwind,
     Text,
   } from '@react-email/components';
-  import { Order } from '@/types';
-  import { formatCurrency } from '@/lib/utils';
-  import sampleData from '@/db/sample-data';
-  require('dotenv').config();
+import { Order } from '@/types';
+import { formatCurrency } from '@/lib/utils';
+import sampleData from '@/db/sample-data';
+import 'dotenv/config';
   
   PurchaseReceiptEmail.PreviewProps = {
     order: {
