@@ -1,6 +1,6 @@
 import Heading from "../header/heading";
 import ProductCard from "./product-card";
-import { ProductType } from "@/types";
+import { ProductCardType } from "@/types";
 
 const ProductList = ({
   data,
@@ -8,7 +8,7 @@ const ProductList = ({
   limit,
   icon,
 }: {
-  data: ProductType[];
+  data: ProductCardType[];
   title?: string;
   limit?: number;
   icon?: React.ReactElement;
@@ -21,7 +21,7 @@ const ProductList = ({
       <Heading title={title} icon={icon} />
       {data.length > 0 ? (
         <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {limitedData.map((product: ProductType) => (
+          {limitedData.map((product: ProductCardType) => (
             <ProductCard product={product} key={product.slug} />
           ))}
         </div>

@@ -7,8 +7,6 @@ import {
 } from "@/lib/actions/product.actions";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
 const ratings = [1, 2, 3, 4, 5];
 const sortOrders = ["Newest", "Oldest", "Highest", "Lowest", "Rating"];
 const prices = [
@@ -113,17 +111,18 @@ const SearchPage = async (props: {
     return `/search?${new URLSearchParams(params).toString()}`;
   };
 
-  const products = await getAllProducts({
-    query: q,
-    category,
-    sort,
-    page: Number(page),
-    price,
-    rating,
-    limit: null,
-  });
-
-  const categories = await getAllCategories();
+  const [products, categories] = await Promise.all([
+    getAllProducts({
+      query: q,
+      category,
+      sort,
+      page: Number(page),
+      price,
+      rating,
+      limit: null,
+    }),
+    getAllCategories(),
+  ]);
 
   return (
     <div className="grid md:grid-cols-5 md:gap-5">

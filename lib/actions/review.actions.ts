@@ -5,7 +5,7 @@ import { insertReviewSchema } from "../validators";
 import { formatErrors } from "../utils";
 import { auth } from "@/auth";
 import { prisma } from "@/db/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 // Create & Update review
 export async function creatUpdateReview(
@@ -88,6 +88,7 @@ export async function creatUpdateReview(
     });
 
     revalidatePath(`/product/${product.slug}`);
+    revalidateTag("products");
 
     return {
       success: true,

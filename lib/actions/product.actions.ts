@@ -2,26 +2,103 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 import { LATEST_PRODCUCT_LIMIT, PAGE_SIZE } from "../constants";
 import { convertToJSObject, formatErrors, shuffleArray } from "../utils";
 import { insertProductSchema, updateProductSchema } from "../validators";
 import { requireAdminSession } from "../auth-guard";
 
+const productCardSelect = {
+  id: true,
+  slug: true,
+  name: true,
+  brand: true,
+  category: true,
+  images: true,
+  price: true,
+  rating: true,
+  stock: true,
+} satisfies Prisma.ProductSelect;
+
+const bannerProductSelect = {
+  ...productCardSelect,
+  banner: true,
+} satisfies Prisma.ProductSelect;
+
+const getLatestProductsCached = unstable_cache(
+  async (limit: number) => {
+    const products = await prisma.product.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      select: productCardSelect,
+    });
+
+    return convertToJSObject(products);
+  },
+  ["homepage-latest-products"],
+  { revalidate: 60, tags: ["products"] }
+);
+
+const getFeaturedProductsCached = unstable_cache(
+  async (take: number) => {
+    const products = await prisma.product.findMany({
+      where: { isFeatured: true },
+      orderBy: { createdAt: "desc" },
+      take,
+      select: bannerProductSelect,
+    });
+
+    return convertToJSObject(products);
+  },
+  ["homepage-featured-products"],
+  { revalidate: 60, tags: ["products"] }
+);
+
+const getProductsByCategoryCached = unstable_cache(
+  async (category: string, take: number) => {
+    const products = await prisma.product.findMany({
+      where: { category },
+      orderBy: { createdAt: "desc" },
+      take,
+      select: productCardSelect,
+    });
+
+    return convertToJSObject(products);
+  },
+  ["homepage-products-by-category"],
+  { revalidate: 60, tags: ["products"] }
+);
+
+const getProductBySlugCached = unstable_cache(
+  async (slug: string) =>
+    prisma.product.findFirst({
+      where: { slug },
+    }),
+  ["product-by-slug"],
+  { revalidate: 60, tags: ["products"] }
+);
+
+const getAllCategoriesCached = unstable_cache(
+  async () =>
+    prisma.product.groupBy({
+      by: ["category"],
+      _count: true,
+    }),
+  ["product-categories"],
+  { revalidate: 300, tags: ["products"] }
+);
+
 export async function getLatestProducts(
   limit: number = LATEST_PRODCUCT_LIMIT,
   shuffle = false
 ) {
   try {
-      const products = await prisma.product.findMany({
-      take: limit,
-      orderBy: { createdAt: "desc" },
-    });
+    const products = await getLatestProductsCached(limit);
 
     return shuffle
-      ? shuffleArray(convertToJSObject(products))
-      : convertToJSObject(products);
+      ? shuffleArray([...products])
+      : products;
   } catch (error) {
     console.error("Failed to fetch latest products:", error);
     throw new Error("Failed to fetch latest products");
@@ -30,10 +107,7 @@ export async function getLatestProducts(
 
 export async function getProductBySlug(slug: string) {
   try {
-    const product = await prisma.product.findFirst({
-      where: { slug },
-    });
-
+    const product = await getProductBySlugCached(slug);
     return convertToJSObject(product);
   } catch (error) {
     console.error("Failed to fetch product by slug:", error);
@@ -154,6 +228,7 @@ export async function getAllProducts({
     orderBy: sortFilter(),
     skip: safeLimit ? (safePage - 1) * safeLimit : 0,
     take: safeLimit ?? undefined,
+    select: productCardSelect,
   });
 
   const dataCount = await prisma.product.count({ where });
@@ -191,6 +266,7 @@ export const deleteProduct = async (id: string) => {
       where: { id },
     });
 
+    revalidateTag("products");
     revalidatePath("/admin/products");
 
     return {
@@ -216,6 +292,7 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
 
     await prisma.product.create({ data: product });
 
+    revalidateTag("products");
     revalidatePath("/admin/products");
 
     return {
@@ -261,6 +338,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       },
     });
 
+    revalidateTag("products");
     revalidatePath("/admin/products");
 
     return {
@@ -277,31 +355,15 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
 
 // get all categories
 export async function getAllCategories() {
-  const data = await prisma.product.groupBy({
-    by: ["category"],
-    _count: true,
-  });
-
-  return data;
+  return getAllCategoriesCached();
 }
 
 // Get featured products
 export async function getFeaturedProducts(take = 4) {
-  const data = await prisma.product.findMany({
-    where: { isFeatured: true },
-    orderBy: { createdAt: "desc" },
-    take,
-  });
-
-  return convertToJSObject(data);
+  return getFeaturedProductsCached(take);
 }
 
 // get puducts by category
-export async function getProductsByCategory(category: string) {
-  const data = await prisma.product.findMany({
-    where: { category },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return convertToJSObject(data);
+export async function getProductsByCategory(category: string, take = 4) {
+  return getProductsByCategoryCached(category, take);
 }

@@ -22,6 +22,22 @@ import {
   InsertCartSchema,
 } from "../validators";
 
+type CartLookup = {
+  where: Prisma.CartWhereInput;
+};
+
+const getCartLookup = async (): Promise<CartLookup | undefined> => {
+  const sessionCartId = (await cookies()).get("sessionCartId")?.value;
+  if (!sessionCartId) return undefined;
+
+  const session = await auth();
+  const userId = session?.user?.id ? String(session.user.id) : undefined;
+
+  return {
+    where: userId ? { userId } : { sessionCartId },
+  };
+};
+
 // calculate cart prices
 export const calcPrice = async (items: CartItem[]) => {
   // calculate prices of every item in the cart
@@ -161,17 +177,12 @@ export async function addItemToCart(
 
 // Get my cart should return the cart of the user or the session cart
 export const getMyCart = async () => {
-  // Check for a guest cart cookie. Authenticated carts are resolved by user ID.
-  const sessionCartId = (await cookies()).get("sessionCartId")?.value;
+  const cartLookup = await getCartLookup();
+  if (!cartLookup) return undefined;
 
-  if (!sessionCartId) return undefined;
-
-  // get session and user id
-  const session = await auth();
-  const userId = session?.user?.id ? (session?.user?.id as string) : undefined; // get user id or undefined if the user is not logged in
   // get cart from database
   const cart = await prisma.cart.findFirst({
-    where: userId ? { userId } : { sessionCartId }, // if user is logged in, get cart by user id, else get cart by session cart id
+    where: cartLookup.where,
   });
 
   if (!cart) return undefined;
@@ -186,6 +197,60 @@ export const getMyCart = async () => {
     sessionCartId: cart.sessionCartId ?? "",
     userId: cart.userId ?? undefined,
   });
+};
+
+// Return only the aggregate quantity needed by the header. The full cart stays
+// on the server and is never sent to the header during the initial render.
+export const getCartItemCount = async (): Promise<number> => {
+  const cartLookup = await getCartLookup();
+  if (!cartLookup) return 0;
+
+  const cart = await prisma.cart.findFirst({
+    where: cartLookup.where,
+    select: { items: true },
+  });
+
+  if (!cart || !Array.isArray(cart.items)) return 0;
+
+  const items = cart.items as unknown[];
+  return items.reduce<number>((total, item) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) return total;
+
+    const quantity = (item as { qty?: unknown }).qty;
+    return typeof quantity === "number" && Number.isFinite(quantity)
+      ? total + quantity
+      : total;
+  }, 0);
+};
+
+// Product pages need one item quantity for their controls, not the whole cart.
+export const getCartItemQuantity = async (productId: string): Promise<number> => {
+  const cartLookup = await getCartLookup();
+  if (!cartLookup) return 0;
+
+  const cart = await prisma.cart.findFirst({
+    where: cartLookup.where,
+    select: { items: true },
+  });
+
+  if (!cart || !Array.isArray(cart.items)) return 0;
+
+  const item = cart.items.find(
+    (cartItem) =>
+      cartItem &&
+      typeof cartItem === "object" &&
+      !Array.isArray(cartItem) &&
+      (cartItem as { productId?: unknown }).productId === productId
+  );
+
+  const quantity =
+    item && typeof item === "object" && !Array.isArray(item)
+      ? (item as { qty?: unknown }).qty
+      : undefined;
+
+  return typeof quantity === "number" && Number.isFinite(quantity)
+    ? quantity
+    : 0;
 };
 
 // remove item from cart

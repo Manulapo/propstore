@@ -17,6 +17,7 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { Cart } from "@/types";
 import { ArrowRight, Loader, Minus, Plus } from "lucide-react";
 import LazyImage from "@/components/shared/lazy-image";
+import { CART_UPDATED_EVENT } from "@/components/shared/header/cart-events";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -88,7 +89,10 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                                 variant: "destructive",
                                 description: res.message,
                               });
+                              return;
                             }
+
+                            window.dispatchEvent(new Event(CART_UPDATED_EVENT));
                           });
                         }}
                       >
@@ -112,7 +116,10 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                                 variant: "destructive",
                                 description: res.message,
                               });
+                              return;
                             }
+
+                            window.dispatchEvent(new Event(CART_UPDATED_EVENT));
                           });
                         }}
                       >

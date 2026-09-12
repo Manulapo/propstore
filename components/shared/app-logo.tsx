@@ -15,10 +15,9 @@ const AppLogo = ({
   return (
     <div className="flex items-center gap-2">
       <Image
-        src="/images/logo.svg"
+        src="/propstore_logo.svg"
         height={iconSize}
         width={iconSize}
-        priority={true}
         alt={`${APP_NAME} Logo`}
         className={cn("dark:invert", className)}
       />

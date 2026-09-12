@@ -2,10 +2,10 @@ import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ProductPrice from "./product-price";
-import { ProductType } from "@/types/index";
+import { ProductCardType } from "@/types/index";
 import Rating from "./ratings";
 
-const ProductCard = ({ product }: { product: ProductType }) => {
+const ProductCard = ({ product }: { product: ProductCardType }) => {
   return (
     <Card className="overflow-hidden my-3 pb-2">
       <CardHeader className="p-0 items-center">

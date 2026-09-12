@@ -14,12 +14,13 @@ import {
 import promoObject from "@/public/promo/promo.json";
 import { FilmIcon, StarsIcon } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 const HomePage = async () => {
-  const latestProducts = await getLatestProducts(8, true);
-  const featuredProducts = await getFeaturedProducts(4);
-  const harryPotterProducts = await getProductsByCategory("Harry Potter");
+  const [latestProducts, featuredProducts, harryPotterProducts] =
+    await Promise.all([
+      getLatestProducts(8, true),
+      getFeaturedProducts(4),
+      getProductsByCategory("Harry Potter", 4),
+    ]);
 
   return (
     <div className="md:overflow-x-visible overflow-x-hidden">

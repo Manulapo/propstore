@@ -19,6 +19,11 @@ export type ProductType = z.infer<typeof insertProductSchema> & {
   numReviews: number;
 };
 
+export type ProductCardType = Pick<
+  ProductType,
+  "id" | "slug" | "name" | "brand" | "category" | "images" | "price" | "rating" | "stock"
+>;
+
 export type OrderItemWithStringPrice = Omit<OrderItem, "price"> & {
   price: string;
 };

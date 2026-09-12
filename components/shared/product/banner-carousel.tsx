@@ -6,12 +6,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ProductType } from "@/types";
+import { ProductCardType } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
 import LazyImage from "@/components/shared/lazy-image";
 import Link from "next/link";
 
-const BannerCarousel = ({ data }: { data: ProductType[] }) => {
+const BannerCarousel = ({
+  data,
+}: {
+  data: (ProductCardType & { banner: string | null })[];
+}) => {
   return (
     <Carousel
       className="w-full mb-12"

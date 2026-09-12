@@ -1,8 +1,6 @@
 import Footer from "@/components/footer";
 import AppHeader from "@/components/shared/header";
 
-export const dynamic = "force-dynamic";
-
 export default function RootLayout({
   children,
 }: Readonly<{

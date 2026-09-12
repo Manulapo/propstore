@@ -1,17 +1,12 @@
-import { auth } from "@/auth";
 import AddToCart from "@/components/shared/product/add-to-cart";
 import ProductImage from "@/components/shared/product/product-images";
 import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getMyCart } from "@/lib/actions/cart.actions";
 import { getProductBySlug } from "@/lib/actions/product.actions";
-import { Cart } from "@/types";
 import { notFound } from "next/navigation";
 import ReviewList from "./review-list";
 import Rating from "@/components/shared/product/ratings";
-
-export const dynamic = "force-dynamic";
 
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>;
@@ -20,10 +15,6 @@ const ProductDetailsPage = async (props: {
   const product = await getProductBySlug(slug);
 
   if (!product) notFound(); //if product is not found, return 404
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  const cart = (await getMyCart()) as Cart;
 
   return (
     <>
@@ -81,7 +72,6 @@ const ProductDetailsPage = async (props: {
                 {!!product.stock && (
                   <div className="flex-center">
                     <AddToCart
-                      cart={cart}
                       item={{
                         productId: product.id,
                         name: product.name,
@@ -101,7 +91,6 @@ const ProductDetailsPage = async (props: {
       <section className="mt-10">
         <h2 className="h2-bold mb-4">Customer Reviews</h2>
         <ReviewList
-          userId={userId ?? ""}
           productId={product.id}
           ProductSlug={product.slug}
         />

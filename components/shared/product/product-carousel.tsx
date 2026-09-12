@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ProductType } from "@/types";
+import { ProductCardType } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 import Heading from "../header/heading";
@@ -17,7 +17,7 @@ const ProductCarousel = ({
   title,
   icon,
 }: {
-  data: ProductType[];
+  data: ProductCardType[];
   title?: string;
   icon?: React.ReactElement;
 }) => {

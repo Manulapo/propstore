@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import ReviewForm from "./review-form";
 import { getProductReviews } from "@/lib/actions/review.actions";
 import {
@@ -17,14 +18,14 @@ import { formatDate } from "@/lib/utils";
 import Rating from "@/components/shared/product/ratings";
 
 const ReviewList = ({
-  userId,
   productId,
   ProductSlug,
 }: {
-  userId: string;
   productId: string;
   ProductSlug: string;
 }) => {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id ?? "";
   const [reviews, setReviews] = useState<Review[]>([]);
   const reload = async () => {
     const res = await getProductReviews({ productId });
@@ -59,7 +60,7 @@ const ReviewList = ({
   return (
     <div className="space-y-4">
       {reviews.length === 0 && <div>No reviews Yet</div>}
-      {userId ? (
+      {status === "loading" ? null : userId ? (
         <ReviewForm
           userId={userId}
           productId={productId}

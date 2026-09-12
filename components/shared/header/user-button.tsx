@@ -1,11 +1,15 @@
-import { auth } from "@/auth";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import ClientUserMenu from "./client-user-menu";
 
-const UserButton = async () => {
-  const session = await auth();
+const UserButton = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") return null;
 
   if (!session || !session.user) {
     return (
@@ -22,14 +26,12 @@ const UserButton = async () => {
 
   return (
     <ClientUserMenu
-      name={session.user.name as string}
+      name={session.user.name ?? undefined}
       email={session.user.email}
       role={session.user.role}
       firstInitial={firstInitial}
     />
   );
-
-  
 };
 
 export default UserButton;

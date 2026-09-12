@@ -19,12 +19,13 @@ export const Hero = async () => {
         </div>
         <div className="md:col-span-4">
           <Image
-            src="/images/hero.png"
-            height={400}
-            width={400}
+            src="/images/hero.webp"
+            height={1871}
+            width={1351}
             priority={true}
             alt="Hero Image"
-            className="object-cover w-full h-full"
+            sizes="(max-width: 767px) 100vw, 33vw"
+            className="object-cover w-full h-auto"
           />
         </div>
       </div>
